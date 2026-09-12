@@ -7,6 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Sanitize environment variables (strip accidental quotes or spaces)
+for k in ["GROQ_API_KEY", "OPENWEATHER_API_KEY", "TAVILY_API_KEY"]:
+    if os.getenv(k):
+        os.environ[k] = os.getenv(k).strip("\"' \t\r\n")
+
 from langchain_groq import ChatGroq
 from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage, SystemMessage
