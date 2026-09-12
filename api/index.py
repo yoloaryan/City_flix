@@ -128,11 +128,40 @@ class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self._send_json({"status": "ok"}, status=200)
 
+    def _serve_file(self, filename, content_type):
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        filepath = os.path.join(base_dir, filename)
+        if not os.path.exists(filepath):
+            filepath = os.path.join(base_dir, "public", filename)
+        if os.path.exists(filepath):
+            with open(filepath, "rb") as f:
+                content = f.read()
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(content)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(content)
+        else:
+            self._send_json({"error": f"File {filename} not found"}, status=404)
+
     def do_GET(self):
         parsed = urlparse(self.path)
+        path = parsed.path
+
+        # Serve static assets if Vercel routes root requests to the serverless function
+        if path in ["", "/", "/index.html"]:
+            self._serve_file("index.html", "text/html; charset=utf-8")
+            return
+        elif path == "/style.css":
+            self._serve_file("style.css", "text/css; charset=utf-8")
+            return
+        elif path == "/app.js":
+            self._serve_file("app.js", "application/javascript; charset=utf-8")
+            return
 
         # Handle /api/status or /status
-        if parsed.path.endswith("/status"):
+        if path.endswith("/status"):
             groq_k = bool(os.getenv("GROQ_API_KEY"))
             weather_k = bool(os.getenv("OPENWEATHER_API_KEY"))
             tavily_k = bool(os.getenv("TAVILY_API_KEY"))
@@ -145,7 +174,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         # Handle /api/city-overview or /city-overview
-        if "city-overview" in parsed.path:
+        if "city-overview" in path:
             qs = parse_qs(parsed.query)
             city = qs.get("city", ["Barcelona"])[0]
             weather_raw = get_weather.invoke({"city": city})
@@ -158,6 +187,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         self._send_json({"error": "API route not found"}, status=404)
+
 
     def do_POST(self):
         parsed = urlparse(self.path)

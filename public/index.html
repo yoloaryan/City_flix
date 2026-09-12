@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cityflix | Global City Intelligence</title>
+    <meta name="description" content="Cinematic real-time global city intelligence powered by Groq, OpenWeather, and Tavily.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ====================================================================
+         Netflix Top Navigation Bar
+         ==================================================================== -->
+    <header class="navbar" id="navbar">
+        <div class="nav-left">
+            <a href="#" class="brand-logo" id="brandLogo">CITYFLIX</a>
+            <ul class="nav-links">
+                <li><a href="#hero" class="active" id="navHome">Home</a></li>
+                <li><a href="#trending-section" id="navCities">Global Hubs</a></li>
+                <li><a href="#weather-section" id="navWeather">Weather Radar</a></li>
+                <li><a href="#news-section" id="navNews">Top Intelligence</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="citySearchInput" placeholder="Search any city (e.g. Tokyo)..." autocomplete="off">
+            </div>
+
+            <div class="api-status-badge" id="apiStatusBadge">
+                <div class="status-dot"></div>
+                <span id="apiStatusText">AI Agent Active</span>
+            </div>
+
+            <button class="agent-trigger-btn" id="openDrawerBtn">
+                <span>🛰️</span>
+                <span>Open Terminal</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ====================================================================
+         Cinematic Hero Billboard
+         ==================================================================== -->
+    <section class="hero-billboard" id="hero">
+        <div class="hero-vignette"></div>
+        <div class="hero-content">
+            <div class="hero-series-badge">
+                <span class="red-n">N</span> C I T Y F L I X &nbsp; O R I G I N A L
+            </div>
+            <h1 class="hero-title" id="heroCityTitle">BARCELONA</h1>
+            <div class="hero-meta">
+                <span class="meta-match">99% MATCH</span>
+                <span class="meta-tag">4K LIVE</span>
+                <span class="meta-tag">SATELLITE SYNCED</span>
+                <div class="meta-weather" id="heroWeatherBadge">
+                    <span>🌦️</span>
+                    <span id="heroWeatherText">26°C Clear Sky</span>
+                </div>
+            </div>
+            <p class="hero-synopsis" id="heroSynopsis">
+                Catalonia's vibrant capital bathed in Mediterranean sun. Discover live metropolitan weather updates, breaking sports and cultural news, and deep intelligence verified in real-time.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn-play" id="heroAskBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    <span>Ask City Agent</span>
+                </button>
+                <button class="btn-more-info" id="heroInfoBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    <span>Live Intelligence</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         Netflix Content Rows & Carousels
+         ==================================================================== -->
+    <main class="main-content">
+        
+        <!-- Row 1: Trending Global Hubs -->
+        <section class="row-section" id="trending-section">
+            <div class="row-header">
+                <h2 class="row-title">Trending Global Hubs</h2>
+                <span class="row-subtitle">Click any city to feature & query</span>
+            </div>
+            <div class="carousel-track" id="citiesCarousel">
+                <!-- Dynamically generated or interactive cards -->
+            </div>
+        </section>
+
+        <!-- Row 2: Live Intelligence Headlines -->
+        <section class="row-section" id="news-section">
+            <div class="row-header">
+                <h2 class="row-title">Top Intelligence & News Headlines</h2>
+                <span class="row-subtitle">Powered by Tavily Live Search</span>
+            </div>
+            <div class="carousel-track" id="newsCarousel">
+                <!-- Dynamically populated news cards -->
+            </div>
+        </section>
+
+        <!-- Row 3: Global Weather Radar -->
+        <section class="row-section" id="weather-section">
+            <div class="row-header">
+                <h2 class="row-title">Global Weather Radar</h2>
+                <span class="row-subtitle">Powered by OpenWeatherMap API</span>
+            </div>
+            <div class="carousel-track" id="weatherCarousel">
+                <!-- Dynamically populated weather cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ====================================================================
+         Netflix Agent Terminal (Slide-over Drawer)
+         ==================================================================== -->
+    <div class="agent-drawer-overlay" id="drawerOverlay"></div>
+
+    <aside class="agent-drawer" id="agentDrawer">
+        <div class="drawer-header">
+            <div class="drawer-title-group">
+                <div style="font-size: 1.5rem;">🛰️</div>
+                <div>
+                    <h3>Cityflix Agent Terminal</h3>
+                    <p>Powered by Groq gpt-oss-120b & LangChain</p>
+                </div>
+            </div>
+            <button class="drawer-close-btn" id="closeDrawerBtn">&times;</button>
+        </div>
+
+        <div class="drawer-messages" id="drawerMessages">
+            <div class="msg-row bot">
+                <div class="msg-avatar bot">N</div>
+                <div class="msg-bubble">
+                    Welcome to <strong>Cityflix Terminal</strong>. I have real-time access to live weather sensors and global news intelligence.<br><br>
+                    Ask me about any city in the world (e.g. <em>"What is the weather and top headlines in Tokyo?"</em>).
+                </div>
+            </div>
+        </div>
+
+        <!-- Human in the loop container for pending tool calls -->
+        <div id="approvalContainer"></div>
+
+        <div class="drawer-input-area">
+            <form class="drawer-form" id="agentChatForm">
+                <input type="text" id="agentInput" placeholder="Message Cityflix Agent..." autocomplete="off">
+                <button type="submit" id="agentSendBtn">Send</button>
+            </form>
+        </div>
+    </aside>
+
+    <script src="app.js"></script>
+</body>
+</html>
