@@ -6,21 +6,39 @@
 
 **A Netflix-inspired, real-time City Intelligence Agent combining autonomous AI with Human-in-the-Loop tool verification.**
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-city--flix.onrender.com-E50914?style=for-the-badge&logo=render&logoColor=white)](https://city-flix.onrender.com/)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![LangChain](https://img.shields.io/badge/LangChain-1.x-1C3C3C?style=for-the-badge&logo=chainlink&logoColor=white)](https://www.langchain.com/)
 [![Groq](https://img.shields.io/badge/Groq-Inference-F55036?style=for-the-badge)](https://groq.com/)
-[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://city-flix.onrender.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg?style=for-the-badge)](LICENSE)
+
+<br/>
+
+### 🌐 [Explore the Live Web App &rarr; https://city-flix.onrender.com/](https://city-flix.onrender.com/)
 
 </div>
 
 ---
 
-## 🌟 Overview
+## 🌟 About Cityflix
 
-**Cityflix** is an AI agent system styled after the **Netflix streaming interface**. It monitors global metropolitan cities in real time, serving dynamic weather readings, breaking news briefings, and conversational city intelligence with strict **Human-in-the-Loop (HITL)** approvals before tool execution.
+**Cityflix** is an interactive, cinematic AI agent platform designed to deliver real-time global city intelligence wrapped in the familiar, immersive experience of the **Netflix streaming interface**. 
+
+Whether you're tracking weather disruptions, discovering breaking regional news, or asking complex multimodal city questions, Cityflix bridges high-speed autonomous AI reasoning with complete user control.
+
+### 🎯 Why Cityflix?
+
+Most AI dashboards look like standard text chatbots. **Cityflix reimagines city exploration as an entertainment-grade streaming platform**:
+- **Cinematic Discovery**: Explore cities through high-resolution billboards, match ratings, and horizontal poster carousels that zoom on hover.
+- **Deep Real-Time Intelligence**: Connects to **OpenWeatherMap** for satellite-backed atmospheric readings and **Tavily AI Search** for live news crawling.
+- **Safe & Controllable (Human-in-the-Loop)**: Rather than executing external API requests silently, Cityflix prompts you with Netflix-styled confirmation cards detailing the exact tool and parameters, putting you in direct control of every agent action.
+- **Lightweight & High Performance**: Built with zero bulky UI frameworks—just pure, optimized Vanilla HTML5, CSS3, and JavaScript backed by a high-throughput Python backend.
+
+---
 
 ### ✨ Key Features
+
 
 - 🎭 **Netflix Cinematic UI**:
   - Dark-mode aesthetic (`#141414`) with Netflix Red (`#E50914`) accents.
