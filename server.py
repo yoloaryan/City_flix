@@ -7,18 +7,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def clean_key(val):
+def clean_key(val, key_name=""):
     if not val:
         return ""
     val = val.strip()
     if "=" in val:
         val = val.split("=", 1)[1]
-    return val.strip("\"' \t\r\n")
+    val = val.strip("\"' \t\r\n")
+    if key_name == "TAVILY_API_KEY" and val.startswith("vly-"):
+        val = "t" + val
+    return val
 
 for k in ["GROQ_API_KEY", "OPENWEATHER_API_KEY", "TAVILY_API_KEY"]:
     raw = os.getenv(k)
     if raw:
-        os.environ[k] = clean_key(raw)
+        os.environ[k] = clean_key(raw, k)
+
 
 
 from langchain_groq import ChatGroq
