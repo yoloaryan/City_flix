@@ -1,0 +1,17 @@
+langchain
+langchain-core
+langchain-openai
+python-dotenv
+langchain-groq
+langchain-community
+
+
+python-dotenv
+requests
+langchain>=1.0.0
+langchain-groq
+langchain-core
+tavily-python
+rich
+streamlit
+ 

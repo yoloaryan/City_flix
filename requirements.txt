@@ -1,0 +1,6 @@
+langchain>=1.0.0
+langchain-core>=1.4.0
+langchain-groq>=1.1.0
+tavily-python>=0.8.0
+requests>=2.31.0
+python-dotenv>=1.0.0
