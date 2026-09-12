@@ -115,20 +115,39 @@ Open your browser and visit: **`http://localhost:8000`**
 
 ---
 
-## ☁️ Deploying to Vercel
+## ☁️ Deployment Options
 
-1. Push your repository to GitHub:
-   ```bash
-   git add .
-   git commit -m "Update Cityflix"
-   git push origin main
-   ```
+### Option A: Deploy to Render (Recommended for continuous Python backend)
+
+Deploy with a single click using the Render Blueprint:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/yoloaryan/City_flix)
+
+Or manually:
+1. Go to [dashboard.render.com](https://dashboard.render.com/) and click **New +** → **Web Service**.
+2. Connect your GitHub repository `yoloaryan/City_flix`.
+3. Set the configurations:
+   - **Runtime:** `Python 3`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `python server.py`
+4. Under **Environment Variables**, add:
+   - `GROQ_API_KEY`
+   - `OPENWEATHER_API_KEY`
+   - `TAVILY_API_KEY`
+5. Click **Deploy Web Service**!
+
+---
+
+### Option B: Deploy to Vercel
+
+1. Push your repository to GitHub.
 2. Navigate to [vercel.com/new](https://vercel.com/new) and click **Import** next to **`City_flix`**.
 3. Under **Environment Variables**, add:
    - `GROQ_API_KEY`
    - `OPENWEATHER_API_KEY`
    - `TAVILY_API_KEY`
 4. Click **Deploy**. Vercel will automatically build the static assets and the serverless Python API!
+
 
 ---
 
