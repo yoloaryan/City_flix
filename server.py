@@ -7,10 +7,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Sanitize environment variables (strip accidental quotes or spaces)
+def clean_key(val):
+    if not val:
+        return ""
+    val = val.strip()
+    if "=" in val:
+        val = val.split("=", 1)[1]
+    return val.strip("\"' \t\r\n")
+
 for k in ["GROQ_API_KEY", "OPENWEATHER_API_KEY", "TAVILY_API_KEY"]:
-    if os.getenv(k):
-        os.environ[k] = os.getenv(k).strip("\"' \t\r\n")
+    raw = os.getenv(k)
+    if raw:
+        os.environ[k] = clean_key(raw)
+
 
 from langchain_groq import ChatGroq
 from langchain_core.tools import tool
@@ -145,16 +154,21 @@ class CityflixHandler(SimpleHTTPRequestHandler):
         
         # 1. API Status Endpoint
         if parsed.path == "/api/status":
-            groq_k = bool(os.getenv("GROQ_API_KEY"))
-            weather_k = bool(os.getenv("OPENWEATHER_API_KEY"))
-            tavily_k = bool(os.getenv("TAVILY_API_KEY"))
+            ow_val = os.getenv("OPENWEATHER_API_KEY", "")
+            tv_val = os.getenv("TAVILY_API_KEY", "")
+            groq_val = os.getenv("GROQ_API_KEY", "")
             self._send_json({
-                "groq": groq_k,
-                "openweather": weather_k,
-                "tavily": tavily_k,
-                "ready": groq_k and weather_k and tavily_k
+                "groq": bool(groq_val),
+                "openweather": bool(ow_val),
+                "tavily": bool(tv_val),
+                "ready": bool(groq_val and ow_val and tv_val),
+                "ow_len": len(ow_val),
+                "ow_prefix": ow_val[:3] if ow_val else "",
+                "tv_len": len(tv_val),
+                "tv_prefix": tv_val[:4] if tv_val else ""
             })
             return
+
 
         # 2. City Overview Endpoint (Instant summary for hero/cards)
         if parsed.path == "/api/city-overview":
