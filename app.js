@@ -169,7 +169,7 @@ let chatHistory = [];
 let pendingApproval = null;
 let currentFocusedSection = null;
 
-const ALL_SECTIONS = ["hero", "trending-section", "news-section", "weather-section"];
+const ALL_SECTIONS = ["hero", "trending-section", "top10-section", "news-section", "weather-section"];
 
 // DOM Elements
 const navbar = document.getElementById("navbar");
@@ -181,19 +181,40 @@ const heroRegionTag = document.getElementById("heroRegionTag");
 const heroSynopsis = document.getElementById("heroSynopsis");
 const heroAskBtn = document.getElementById("heroAskBtn");
 const heroInfoBtn = document.getElementById("heroInfoBtn");
+const heroPrevBtn = document.getElementById("heroPrevBtn");
+const heroNextBtn = document.getElementById("heroNextBtn");
+const heroIndicators = document.getElementById("heroIndicators");
+const heroRankPill = document.getElementById("heroRankPill");
 
 const trendingRowTitle = document.getElementById("trendingRowTitle");
 const cityCategoryTabs = document.getElementById("cityCategoryTabs");
 const citiesCarousel = document.getElementById("citiesCarousel");
+const top10Carousel = document.getElementById("top10Carousel");
 const newsCarousel = document.getElementById("newsCarousel");
 const weatherCarousel = document.getElementById("weatherCarousel");
 
 const citiesCarouselPrev = document.getElementById("citiesCarouselPrev");
 const citiesCarouselNext = document.getElementById("citiesCarouselNext");
+const top10CarouselPrev = document.getElementById("top10CarouselPrev");
+const top10CarouselNext = document.getElementById("top10CarouselNext");
 const newsCarouselPrev = document.getElementById("newsCarouselPrev");
 const newsCarouselNext = document.getElementById("newsCarouselNext");
 const weatherCarouselPrev = document.getElementById("weatherCarouselPrev");
 const weatherCarouselNext = document.getElementById("weatherCarouselNext");
+
+// Hover Preview Card Elements
+const hoverPreviewCard = document.getElementById("hoverPreviewCard");
+const hoverCardImg = document.getElementById("hoverCardImg");
+const hoverCardTopBadge = document.getElementById("hoverCardTopBadge");
+const hoverCardTitle = document.getElementById("hoverCardTitle");
+const hoverPlayBtn = document.getElementById("hoverPlayBtn");
+const hoverTerminalBtn = document.getElementById("hoverTerminalBtn");
+const hoverLikeBtn = document.getElementById("hoverLikeBtn");
+const hoverMoreInfoBtn = document.getElementById("hoverMoreInfoBtn");
+const hoverCardMatch = document.getElementById("hoverCardMatch");
+const hoverCardCountry = document.getElementById("hoverCardCountry");
+const hoverCardTemp = document.getElementById("hoverCardTemp");
+const hoverCardTags = document.getElementById("hoverCardTags");
 
 const citySearchInput = document.getElementById("citySearchInput");
 const apiStatusBadge = document.getElementById("apiStatusBadge");
@@ -228,6 +249,48 @@ const mobNavHubs = document.getElementById("mobNavHubs");
 const mobNavWeather = document.getElementById("mobNavWeather");
 const mobNavTerminal = document.getElementById("mobNavTerminal");
 
+// Hero Rotating Carousel List
+const HERO_CITIES = [
+    GLOBAL_CITIES[0], // Mumbai
+    GLOBAL_CITIES[2], // Ghaziabad
+    GLOBAL_CITIES[1], // Delhi
+    GLOBAL_CITIES[8], // Varanasi
+    GLOBAL_CITIES[3], // Bengaluru
+    GLOBAL_CITIES[10], // Tokyo
+    GLOBAL_CITIES[12], // London
+    GLOBAL_CITIES[13], // Paris
+    GLOBAL_CITIES[11], // New York
+];
+
+let heroCurrentIndex = 0;
+let heroAutoTimer = null;
+const HERO_INTERVAL_MS = 6000;
+
+// Hover Card State
+let hoverShowTimer = null;
+let hoverHideTimer = null;
+let currentHoveredCity = null;
+
+const CITY_TAGS_MAP = {
+    "Mumbai": ["Financial Capital", "Coastal Skyline", "Bollywood Hub"],
+    "Delhi": ["Capital Metropolis", "Mughal Heritage", "Political Heart"],
+    "Ghaziabad": ["Rapid Rail RRTS", "Delhi-NCR Gateway", "Hindon Enclave"],
+    "Bengaluru": ["Silicon Valley", "Garden City", "Startups"],
+    "Kolkata": ["City of Joy", "Howrah Heritage", "Culture & Arts"],
+    "Chennai": ["Marina Coast", "Carnatic Arts", "Auto Corridor"],
+    "Jaipur": ["Pink City", "Rajputana Forts", "Royal Bazaars"],
+    "Goa": ["Arabian Coast", "Portuguese Baroque", "Susegad Life"],
+    "Varanasi": ["Sacred Ghats", "Ancient Ganga", "Spiritual Cradle"],
+    "Tokyo": ["Futuristic Metro", "Neon Skylines", "Culinary Capital"],
+    "London": ["Thames Heritage", "Royal History", "Global Finance"],
+    "Paris": ["City of Light", "Haute Couture", "Art & Architecture"],
+    "New York": ["Empire State", "Manhattan Energy", "Cultural Icon"],
+    "Dubai": ["Futuristic Oasis", "Burj Khalifa", "Luxury Shopping"],
+    "Singapore": ["Garden Metropolis", "Marina Bay", "Sustainability"],
+    "Barcelona": ["Mediterranean Jewel", "Gaudi Heritage", "Coastal Charm"],
+    "Sydney": ["Harbour City", "Opera House", "Coastal Surf"]
+};
+
 // ==============================================================================
 // Initialization
 // ==============================================================================
@@ -235,6 +298,9 @@ document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     checkApiStatus();
     renderCitiesCarousel();
+    renderTop10Carousel();
+    setupHeroCarousel();
+    setupHoverPreviewCard();
     setHeroCity(activeCity);
     fetchCityOverview(activeCity.name);
     setupEventListeners();
@@ -289,6 +355,7 @@ function focusSection(targetId) {
             let sectionName = "Focused View";
             if (targetId === "weather-section") sectionName = "Weather Radar Active";
             else if (targetId === "news-section") sectionName = "Top Intelligence Active";
+            else if (targetId === "top10-section") sectionName = "Top 10 India Active";
             else if (targetId === "trending-section") sectionName = "City Hubs Active";
             focusResetLabel.textContent = sectionName;
         }
@@ -432,26 +499,118 @@ async function checkApiStatus() {
 }
 
 // ==============================================================================
-// Hero Billboard & City Switching
+// Hero Billboard & City Switching with Auto-Running Carousel
 // ==============================================================================
 function setHeroCity(cityData) {
     activeCity = cityData;
-    heroCityTitle.textContent = cityData.name;
-    heroSynopsis.textContent = cityData.desc;
-    heroWeatherText.textContent = `${cityData.temp} ${cityData.condition}`;
-    heroBillboard.style.backgroundImage = `url('${cityData.image}')`;
+    if (heroCityTitle) heroCityTitle.textContent = cityData.name;
+    if (heroSynopsis) heroSynopsis.textContent = cityData.desc;
+    if (heroWeatherText) heroWeatherText.textContent = `${cityData.temp} ${cityData.condition}`;
+    if (heroBillboard) heroBillboard.style.backgroundImage = `url('${cityData.image}')`;
     
     if (heroRegionTag) {
-        if (cityData.category === "india" || cityData.country.toLowerCase() === "india") {
+        if (cityData.category === "india" || (cityData.country && cityData.country.toLowerCase() === "india")) {
             heroRegionTag.textContent = "🇮🇳 INCREDIBLE INDIA";
             heroRegionTag.style.borderColor = "rgba(255, 153, 51, 0.6)";
             heroRegionTag.style.color = "var(--india-accent)";
         } else {
-            heroRegionTag.textContent = `${cityData.country.toUpperCase()} HUB`;
+            heroRegionTag.textContent = `${(cityData.country || 'GLOBAL').toUpperCase()} HUB`;
             heroRegionTag.style.borderColor = "var(--border-light)";
             heroRegionTag.style.color = "var(--text-secondary)";
         }
     }
+
+    // Sync hero carousel state if city is in HERO_CITIES
+    const heroIdx = HERO_CITIES.findIndex(c => c.name.toLowerCase() === cityData.name.toLowerCase());
+    if (heroIdx !== -1) {
+        heroCurrentIndex = heroIdx;
+        updateHeroIndicators(heroIdx);
+        if (heroRankPill) heroRankPill.textContent = `#${heroIdx + 1} in Trending Hubs`;
+    }
+}
+
+function setupHeroCarousel() {
+    if (!heroIndicators) return;
+
+    heroIndicators.innerHTML = "";
+    HERO_CITIES.forEach((city, idx) => {
+        const dash = document.createElement("div");
+        dash.className = `hero-indicator-dash ${idx === 0 ? "active" : ""}`;
+        dash.setAttribute("data-index", idx);
+        dash.setAttribute("role", "button");
+        dash.setAttribute("tabindex", "0");
+        dash.setAttribute("aria-label", `Switch hero slide to ${city.name}`);
+
+        dash.addEventListener("click", () => {
+            goToHeroSlide(idx, true);
+        });
+
+        heroIndicators.appendChild(dash);
+    });
+
+    if (heroPrevBtn) {
+        heroPrevBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const prevIdx = (heroCurrentIndex - 1 + HERO_CITIES.length) % HERO_CITIES.length;
+            goToHeroSlide(prevIdx, true);
+        });
+    }
+
+    if (heroNextBtn) {
+        heroNextBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const nextIdx = (heroCurrentIndex + 1) % HERO_CITIES.length;
+            goToHeroSlide(nextIdx, true);
+        });
+    }
+
+    // Pause on hover over framed billboard
+    const outerFrame = document.querySelector(".hero-outer-frame") || heroBillboard;
+    if (outerFrame) {
+        outerFrame.addEventListener("mouseenter", pauseHeroTimer);
+        outerFrame.addEventListener("mouseleave", resumeHeroTimer);
+    }
+
+    startHeroTimer();
+}
+
+function updateHeroIndicators(idx) {
+    if (!heroIndicators) return;
+    const dashes = heroIndicators.querySelectorAll(".hero-indicator-dash");
+    dashes.forEach((d, i) => {
+        d.classList.toggle("active", i === idx);
+    });
+}
+
+function goToHeroSlide(index, manualTrigger = false) {
+    heroCurrentIndex = index;
+    const targetCity = HERO_CITIES[heroCurrentIndex];
+    setHeroCity(targetCity);
+    updateHeroIndicators(heroCurrentIndex);
+
+    if (manualTrigger) {
+        fetchCityOverview(targetCity.name);
+        startHeroTimer();
+    }
+}
+
+function startHeroTimer() {
+    pauseHeroTimer();
+    heroAutoTimer = setInterval(() => {
+        const nextIdx = (heroCurrentIndex + 1) % HERO_CITIES.length;
+        goToHeroSlide(nextIdx, false);
+    }, HERO_INTERVAL_MS);
+}
+
+function pauseHeroTimer() {
+    if (heroAutoTimer) {
+        clearInterval(heroAutoTimer);
+        heroAutoTimer = null;
+    }
+}
+
+function resumeHeroTimer() {
+    startHeroTimer();
 }
 
 // ==============================================================================
@@ -506,6 +665,7 @@ function selectCategoryFilter(category) {
 // Carousel Rendering
 // ==============================================================================
 function renderCitiesCarousel() {
+    if (!citiesCarousel) return;
     citiesCarousel.innerHTML = "";
 
     const filtered = GLOBAL_CITIES.filter(city => {
@@ -519,8 +679,9 @@ function renderCitiesCarousel() {
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
         card.setAttribute("aria-label", `Select ${city.name}, ${city.country}`);
+        card.setAttribute("data-city-name", city.name);
 
-        const isIndia = city.category === "india" || city.country.toLowerCase() === "india";
+        const isIndia = city.category === "india" || (city.country && city.country.toLowerCase() === "india");
         const badgeHtml = isIndia 
             ? `<div class="city-card-badge-top india"><span>🇮🇳</span> India Special</div>`
             : `<div class="city-card-badge-top"><span>🌍</span> ${city.country}</div>`;
@@ -535,6 +696,15 @@ function renderCitiesCarousel() {
                     <span class="card-temp-pill">${city.temp}</span>
                     <span>${city.condition}</span>
                 </div>
+                <div class="card-hover-actions">
+                    <button class="card-hover-btn play" title="Feature in Hero" aria-label="Feature ${city.name}">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <button class="card-hover-btn circle" title="Ask Agent" aria-label="Ask Agent about ${city.name}">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    </button>
+                    <span class="card-hover-match">99% MATCH</span>
+                </div>
             </div>
         `;
 
@@ -545,6 +715,23 @@ function renderCitiesCarousel() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
 
+        const playBtn = card.querySelector(".card-hover-btn.play");
+        if (playBtn) {
+            playBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectHandler();
+            });
+        }
+
+        const terminalBtn = card.querySelector(".card-hover-btn.circle");
+        if (terminalBtn) {
+            terminalBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                openDrawer();
+                sendUserMessage(`What is the current weather and top news in ${city.name}?`);
+            });
+        }
+
         card.addEventListener("click", selectHandler);
         card.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -553,7 +740,86 @@ function renderCitiesCarousel() {
             }
         });
 
+        attachCardHoverListener(card, city, false);
+
         citiesCarousel.appendChild(card);
+    });
+}
+
+// ==============================================================================
+// Netflix Signature "Top 10 Cities in India Today" Carousel
+// ==============================================================================
+function renderTop10Carousel() {
+    if (!top10Carousel) return;
+    top10Carousel.innerHTML = "";
+
+    const indianCities = GLOBAL_CITIES.filter(c => c.category === "india" || (c.country && c.country.toLowerCase() === "india"));
+
+    indianCities.forEach((city, idx) => {
+        const rank = idx + 1;
+        const card = document.createElement("div");
+        card.className = "top10-card";
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `Rank #${rank}: ${city.name}, India`);
+        card.setAttribute("data-city-name", city.name);
+
+        card.innerHTML = `
+            <div class="top10-rank">${rank}</div>
+            <div class="top10-poster-wrap">
+                <div class="top10-badge-red">TOP 10</div>
+                <img src="${city.image}" alt="${city.name}" class="top10-poster-img" loading="lazy">
+                <div class="top10-poster-overlay">
+                    <div class="top10-city-name">${city.name}</div>
+                    <div class="top10-status-pill">${city.temp} • ${city.condition}</div>
+                    <div class="card-hover-actions">
+                        <button class="card-hover-btn play" title="Feature in Hero" aria-label="Feature ${city.name}">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </button>
+                        <button class="card-hover-btn circle" title="Ask Agent" aria-label="Ask Agent about ${city.name}">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
+                        <span class="card-hover-match">99% MATCH</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const selectHandler = () => {
+            setHeroCity(city);
+            fetchCityOverview(city.name);
+            resetSectionFocus();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        const playBtn = card.querySelector(".card-hover-btn.play");
+        if (playBtn) {
+            playBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectHandler();
+            });
+        }
+
+        const terminalBtn = card.querySelector(".card-hover-btn.circle");
+        if (terminalBtn) {
+            terminalBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                openDrawer();
+                sendUserMessage(`What is the current weather and top news in ${city.name}?`);
+            });
+        }
+
+        card.addEventListener("click", selectHandler);
+        card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                selectHandler();
+            }
+        });
+
+        attachCardHoverListener(card, city, true);
+
+        top10Carousel.appendChild(card);
     });
 }
 
@@ -681,6 +947,7 @@ function setupCarouselNavButtons() {
     };
 
     attachNav(citiesCarouselPrev, citiesCarouselNext, citiesCarousel);
+    attachNav(top10CarouselPrev, top10CarouselNext, top10Carousel);
     attachNav(newsCarouselPrev, newsCarouselNext, newsCarousel);
     attachNav(weatherCarouselPrev, weatherCarouselNext, weatherCarousel);
 }
@@ -1044,4 +1311,189 @@ function formatMarkdown(text) {
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g, '<br>');
+}
+
+// ==============================================================================
+// Netflix Upmarket Hover Preview Card Controller
+// ==============================================================================
+function getCityTags(cityName) {
+    if (CITY_TAGS_MAP[cityName]) {
+        return CITY_TAGS_MAP[cityName];
+    }
+    return ["Metropolitan Hub", "Live Telemetry", "Culture & Buzz"];
+}
+
+function setupHoverPreviewCard() {
+    if (!hoverPreviewCard) return;
+
+    // Feature / Play Button (White circle ▶)
+    if (hoverPlayBtn) {
+        hoverPlayBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (currentHoveredCity) {
+                setHeroCity(currentHoveredCity);
+                fetchCityOverview(currentHoveredCity.name);
+                resetSectionFocus();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+            hideHoverCard(true);
+        });
+    }
+
+    // Terminal Quick Prompt Button (+ circle)
+    if (hoverTerminalBtn) {
+        hoverTerminalBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (currentHoveredCity) {
+                openDrawer();
+                sendUserMessage(`What is the current weather and top news in ${currentHoveredCity.name}?`);
+            }
+            hideHoverCard(true);
+        });
+    }
+
+    // Bookmark / Like Button (Thumbs up)
+    if (hoverLikeBtn) {
+        hoverLikeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            hoverLikeBtn.classList.toggle("liked");
+            const isLiked = hoverLikeBtn.classList.contains("liked");
+            hoverLikeBtn.style.borderColor = isLiked ? "var(--netflix-red)" : "rgba(255, 255, 255, 0.45)";
+            const svg = hoverLikeBtn.querySelector("svg");
+            if (svg) svg.style.fill = isLiked ? "var(--netflix-red)" : "#ffffff";
+        });
+    }
+
+    // Deep Telemetry / More Info Button (Chevron ⌄)
+    if (hoverMoreInfoBtn) {
+        hoverMoreInfoBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (currentHoveredCity) {
+                setHeroCity(currentHoveredCity);
+                fetchCityOverview(currentHoveredCity.name);
+                focusSection("weather-section");
+            }
+            hideHoverCard(true);
+        });
+    }
+
+    // Keep preview visible while mouse is hovered inside it
+    hoverPreviewCard.addEventListener("mouseenter", () => {
+        if (hoverHideTimer) {
+            clearTimeout(hoverHideTimer);
+            hoverHideTimer = null;
+        }
+    });
+
+    hoverPreviewCard.addEventListener("mouseleave", () => {
+        hideHoverCard(false);
+    });
+}
+
+function attachCardHoverListener(cardEl, city, isTop10 = false) {
+    if (!hoverPreviewCard) return;
+
+    const onEnter = () => {
+        // Disable on touch devices and small mobile viewports
+        if (window.innerWidth <= 768) return;
+
+        if (hoverHideTimer) {
+            clearTimeout(hoverHideTimer);
+            hoverHideTimer = null;
+        }
+
+        if (hoverShowTimer) clearTimeout(hoverShowTimer);
+
+        hoverShowTimer = setTimeout(() => {
+            showHoverCard(cardEl, city, isTop10);
+        }, 150);
+    };
+
+    const onLeave = () => {
+        if (hoverShowTimer) {
+            clearTimeout(hoverShowTimer);
+            hoverShowTimer = null;
+        }
+        hideHoverCard(false);
+    };
+
+    cardEl.addEventListener("mouseenter", onEnter);
+    cardEl.addEventListener("pointerenter", onEnter);
+    cardEl.addEventListener("mouseleave", onLeave);
+    cardEl.addEventListener("pointerleave", onLeave);
+}
+
+function showHoverCard(cardEl, city, isTop10) {
+    if (!hoverPreviewCard || window.innerWidth <= 768) return;
+    currentHoveredCity = city;
+
+    // Populate data
+    if (hoverCardImg) {
+        hoverCardImg.src = city.image;
+        hoverCardImg.alt = city.name;
+    }
+    if (hoverCardTitle) hoverCardTitle.textContent = city.name.toUpperCase();
+    if (hoverCardTopBadge) {
+        hoverCardTopBadge.textContent = isTop10 ? "TOP 10" : "FEATURED";
+        hoverCardTopBadge.style.background = isTop10 ? "var(--netflix-red)" : "rgba(30, 41, 59, 0.9)";
+    }
+    if (hoverCardMatch) {
+        const matches = ["99% Match", "98% Match", "97% Match", "96% Match"];
+        const matchIdx = (city.name.length) % matches.length;
+        hoverCardMatch.textContent = matches[matchIdx];
+    }
+    if (hoverCardCountry) {
+        hoverCardCountry.textContent = city.country.toUpperCase();
+    }
+    if (hoverCardTemp) {
+        hoverCardTemp.textContent = city.temp;
+    }
+    if (hoverCardTags) {
+        const tags = getCityTags(city.name);
+        hoverCardTags.innerHTML = tags.map((t, i) => `<span>${t}</span>${i < tags.length - 1 ? '<span>•</span>' : ''}`).join('');
+    }
+
+    // Reset like button style
+    if (hoverLikeBtn) {
+        hoverLikeBtn.classList.remove("liked");
+        hoverLikeBtn.style.borderColor = "rgba(255, 255, 255, 0.45)";
+        const svg = hoverLikeBtn.querySelector("svg");
+        if (svg) svg.style.fill = "#ffffff";
+    }
+
+    // Calculate position
+    const rect = cardEl.getBoundingClientRect();
+    const cardWidth = 320;
+    const cardHeight = 310;
+
+    let left = rect.left + (rect.width / 2) - (cardWidth / 2);
+    let top = rect.top + (rect.height / 2) - (cardHeight / 2);
+
+    // Keep within viewport boundaries
+    left = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, left));
+    top = Math.max(70, Math.min(window.innerHeight - cardHeight - 20, top));
+
+    hoverPreviewCard.style.left = `${left}px`;
+    hoverPreviewCard.style.top = `${top}px`;
+    hoverPreviewCard.classList.add("visible");
+    hoverPreviewCard.setAttribute("aria-hidden", "false");
+}
+
+function hideHoverCard(immediate = false) {
+    if (!hoverPreviewCard) return;
+
+    if (immediate) {
+        if (hoverHideTimer) clearTimeout(hoverHideTimer);
+        hoverPreviewCard.classList.remove("visible");
+        hoverPreviewCard.setAttribute("aria-hidden", "true");
+        currentHoveredCity = null;
+        return;
+    }
+
+    if (hoverHideTimer) clearTimeout(hoverHideTimer);
+    hoverHideTimer = setTimeout(() => {
+        hoverPreviewCard.classList.remove("visible");
+        hoverPreviewCard.setAttribute("aria-hidden", "true");
+        currentHoveredCity = null;
+    }, 180);
 }

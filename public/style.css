@@ -1,7 +1,7 @@
 /* ==========================================================================
    CITYFLIX - Cinematic Intelligence Design System
    Modern Netflix-Style Dark / Light Theme with Full Mobile & Tablet Responsiveness
-   Includes Section Focus / Translucency Mode & Touch-First Layouts
+   Includes Running Hero Carousel, Netflix Top 10 Giant Numbers & Upmarket Hover Card
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -61,6 +61,8 @@
     --india-pill-text: #ffb066;
     
     --bottom-nav-bg: rgba(18, 18, 18, 0.94);
+    --rank-stroke-color: #555555;
+    --rank-fill-color: #141414;
 }
 
 [data-theme="light"] {
@@ -115,6 +117,8 @@
     --india-pill-text: #b45309;
     
     --bottom-nav-bg: rgba(255, 255, 255, 0.95);
+    --rank-stroke-color: #94a3b8;
+    --rank-fill-color: #f8fafc;
 }
 
 /* ==========================================================================
@@ -165,7 +169,7 @@ body {
 }
 
 /* ==========================================================================
-   SECTION FOCUS & TRANSLUCENCY MODE
+   Section Focus & Translucency Mode
    ========================================================================== */
 .section-translucent {
     opacity: 0.16 !important;
@@ -256,7 +260,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 70px;
+    height: 68px;
     padding: 0 4%;
     display: flex;
     align-items: center;
@@ -272,7 +276,7 @@ body {
 .navbar.scrolled {
     background-color: var(--bg-navbar-scrolled);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-    height: 64px;
+    height: 62px;
 }
 
 .nav-left {
@@ -362,7 +366,7 @@ body {
     pointer-events: none;
 }
 
-/* Mobile Search Icon Trigger */
+/* Mobile Search Button */
 .mob-search-btn {
     display: none;
     align-items: center;
@@ -387,7 +391,7 @@ body {
 .mob-search-bar {
     display: none;
     position: fixed;
-    top: 60px;
+    top: 58px;
     left: 0;
     width: 100%;
     padding: 10px 14px;
@@ -429,7 +433,7 @@ body {
     border: 1px solid var(--border-highlight);
     border-radius: 8px;
     padding: 10px 40px 10px 38px;
-    font-size: 16px; /* 16px prevents iOS zoom */
+    font-size: 16px;
     color: var(--text-primary);
     outline: none;
     font-family: var(--font-body);
@@ -545,21 +549,38 @@ body {
 }
 
 /* ==========================================================================
-   Hero Billboard Section
+   FRAMED RUNNING HERO BILLBOARD CAROUSEL (Inspired by Netflix Screenshot)
    ========================================================================== */
+.hero-outer-frame {
+    width: 100%;
+    max-width: 96%;
+    margin: 82px auto 0 auto;
+    position: relative;
+}
+
 .hero-billboard {
     position: relative;
-    min-height: 72vh;
+    min-height: 70vh;
+    min-height: 560px;
     width: 100%;
     display: flex;
     align-items: flex-end;
-    padding: 95px 4% 5% 4%;
+    padding: 60px 5% 5% 5%;
+    border-radius: 20px;
+    overflow: hidden;
     background-size: cover;
     background-position: center 30%;
     background-repeat: no-repeat;
-    transition: background-image 0.6s ease-in-out;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--border-light);
+    transition: background-image 0.75s ease-in-out;
 }
 
+.hero-billboard:hover .hero-nav-arrow {
+    opacity: 0.85;
+}
+
+/* Hero Vignette Gradients */
 .hero-vignette {
     position: absolute;
     top: 0;
@@ -571,10 +592,87 @@ body {
     transition: background 0.3s ease;
 }
 
+/* Hero Nav Arrows */
+.hero-nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 68px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 0.25s ease, background-color 0.2s ease;
+    backdrop-filter: blur(8px);
+}
+
+.hero-nav-arrow.prev {
+    left: 12px;
+}
+
+.hero-nav-arrow.next {
+    right: 12px;
+}
+
+.hero-nav-arrow:hover {
+    opacity: 1 !important;
+    background: var(--netflix-red);
+}
+
+/* Top-Right Netflix Style Badges */
+.hero-top-right-tags {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hero-rank-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.rank-top10-badge {
+    background: var(--netflix-red);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.74rem;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    line-height: 1;
+}
+
+.rank-subtext {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* Hero Content */
 .hero-content {
     position: relative;
-    max-width: 680px;
+    max-width: 660px;
     z-index: 10;
+    transition: opacity 0.4s ease;
 }
 
 .hero-series-badge {
@@ -598,13 +696,13 @@ body {
 
 .hero-title {
     font-family: var(--font-heading);
-    font-size: clamp(2.6rem, 7vw, 5.2rem);
+    font-size: clamp(2.8rem, 7.5vw, 5.5rem);
     line-height: 0.95;
     letter-spacing: 1px;
     text-transform: uppercase;
     margin-bottom: 0.8rem;
     color: var(--text-primary);
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
     word-break: break-word;
 }
 
@@ -612,7 +710,7 @@ body {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 9px;
+    gap: 8px;
     margin-bottom: 1rem;
     font-size: 0.86rem;
     font-weight: 600;
@@ -653,7 +751,7 @@ body {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buttons {
@@ -667,19 +765,20 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    background-color: var(--text-primary);
-    color: var(--bg-primary);
-    padding: 11px 24px;
-    font-size: 0.95rem;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 12px 26px;
+    font-size: 0.98rem;
     font-weight: 700;
     border-radius: 6px;
     border: none;
     cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     transition: all 0.2s ease;
 }
 
 .btn-play:hover {
-    opacity: 0.9;
+    background-color: rgba(255, 255, 255, 0.85);
     transform: scale(1.03);
 }
 
@@ -687,11 +786,11 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    background-color: var(--pill-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    padding: 11px 22px;
-    font-size: 0.95rem;
+    background-color: rgba(109, 109, 110, 0.7);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.98rem;
     font-weight: 600;
     border-radius: 6px;
     cursor: pointer;
@@ -700,8 +799,34 @@ body {
 }
 
 .btn-more-info:hover {
-    background-color: var(--border-light);
+    background-color: rgba(109, 109, 110, 0.4);
     transform: scale(1.03);
+}
+
+/* Netflix Segmented Progress Indicator Dashes */
+.hero-indicators {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hero-indicator-dash {
+    width: 24px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hero-indicator-dash.active {
+    width: 38px;
+    background: var(--netflix-red);
+    box-shadow: 0 0 8px var(--netflix-red-glow);
 }
 
 /* ==========================================================================
@@ -709,7 +834,7 @@ body {
    ========================================================================== */
 .main-content {
     position: relative;
-    margin-top: -35px;
+    margin-top: 25px;
     z-index: 20;
     padding: 0 4% 6rem 4%;
     display: flex;
@@ -893,11 +1018,15 @@ body {
 }
 
 .city-card:hover, .city-card:focus-visible {
-    transform: translateY(-8px) scale(1.05);
-    z-index: 50;
-    box-shadow: var(--card-shadow-hover), 0 0 20px var(--netflix-red-glow);
+    transform: translateY(-8px) scale(1.03);
     border-color: var(--netflix-red);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 20px var(--netflix-red-glow);
     outline: none;
+    z-index: 50;
+}
+
+.city-card:hover .city-card-img {
+    transform: scale(1.08);
 }
 
 .city-card-img {
@@ -905,11 +1034,6 @@ body {
     height: 100%;
     object-fit: cover;
     transition: filter 0.3s ease, transform 0.3s ease;
-}
-
-.city-card:hover .city-card-img {
-    filter: brightness(0.7);
-    transform: scale(1.05);
 }
 
 .city-card-badge-top {
@@ -980,6 +1104,411 @@ body {
     padding: 2px 7px;
     border-radius: 8px;
     font-weight: 700;
+}
+
+/* ==========================================================================
+   NETFLIX SIGNATURE "TOP 10 CITIES" WITH GIANT OUTLINED NUMBERS
+   ========================================================================== */
+.top10-track {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 1.4rem 4px;
+    scroll-snap-type: x mandatory;
+}
+
+.top10-card {
+    flex: 0 0 270px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    scroll-snap-align: start;
+    user-select: none;
+    margin-right: 18px;
+    transition: transform 0.3s ease;
+}
+
+.top10-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Giant outlined rank number matching Netflix */
+.top10-rank {
+    font-family: var(--font-heading);
+    font-size: 12rem;
+    line-height: 0.75;
+    font-weight: 900;
+    -webkit-text-stroke: 4px var(--rank-stroke-color);
+    color: var(--rank-fill-color);
+    margin-right: -32px;
+    z-index: 10;
+    pointer-events: none;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.top10-poster-wrap {
+    width: 175px;
+    height: 250px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    z-index: 15;
+}
+
+.top10-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.top10-card:hover .top10-poster-img {
+    transform: scale(1.06);
+}
+
+.top10-badge-red {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: var(--netflix-red);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.68rem;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 0 0 4px 0;
+    z-index: 20;
+}
+
+.top10-poster-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.95) 80%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.top10-city-name {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.top10-status-pill {
+    display: inline-block;
+    background: var(--netflix-red);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   NETFLIX CARD QUICK HOVER ACTION BAR (Upmarket Micro-Interactions)
+   ========================================================================== */
+.card-hover-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.28s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.28s ease, max-height 0.28s ease;
+}
+
+.city-card:hover .card-hover-actions,
+.city-card:focus-within .card-hover-actions,
+.top10-card:hover .card-hover-actions,
+.top10-card:focus-within .card-hover-actions {
+    opacity: 1;
+    max-height: 44px;
+    transform: translateY(0);
+}
+
+.top10-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    z-index: 50;
+}
+
+.top10-card:hover .top10-poster-wrap {
+    border-color: var(--netflix-red);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9), 0 0 22px var(--netflix-red-glow);
+}
+
+.card-hover-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    padding: 0;
+}
+
+.card-hover-btn.play {
+    background: #ffffff;
+    border: none;
+}
+
+.card-hover-btn.play svg {
+    width: 14px;
+    height: 14px;
+    fill: #000000;
+    margin-left: 2px;
+}
+
+.card-hover-btn.play:hover {
+    transform: scale(1.15);
+    background: #e2e8f0;
+}
+
+.card-hover-btn.circle {
+    background: rgba(30, 30, 30, 0.85);
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.card-hover-btn.circle svg {
+    width: 14px;
+    height: 14px;
+    fill: #ffffff;
+}
+
+.card-hover-btn.circle:hover {
+    transform: scale(1.15);
+    border-color: #ffffff;
+}
+
+.card-hover-match {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #22c55e;
+    letter-spacing: 0.5px;
+    margin-left: auto;
+}
+
+/* ==========================================================================
+   UPMARKET HOVER PREVIEW CARD (Netflix Floating Action Window)
+   ========================================================================== */
+.hover-preview-card {
+    position: fixed;
+    width: 320px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 20px var(--netflix-red-glow);
+    border: 1px solid var(--border-highlight);
+    z-index: 2500;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.92);
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.hover-preview-card.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.hover-card-media {
+    position: relative;
+    width: 100%;
+    height: 165px;
+    overflow: hidden;
+}
+
+.hover-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.hover-preview-card:hover .hover-card-img {
+    transform: scale(1.05);
+}
+
+.hover-card-vignette {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(0deg, var(--bg-card) 0%, transparent 100%);
+}
+
+.hover-card-badge-top {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--netflix-red);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.hover-card-title-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 14px;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.hover-card-content {
+    padding: 12px 14px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hover-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hover-action-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Play Button (White Circle) */
+.hover-btn-play {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.hover-btn-play svg {
+    width: 18px;
+    height: 18px;
+    fill: #000000;
+    margin-left: 2px;
+}
+
+.hover-btn-play:hover {
+    transform: scale(1.1);
+    background: #e2e8f0;
+}
+
+/* Circle Action Buttons (+ and Like) */
+.hover-btn-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(42, 42, 42, 0.75);
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.hover-btn-circle svg {
+    width: 16px;
+    height: 16px;
+    fill: #ffffff;
+}
+
+.hover-btn-circle:hover {
+    transform: scale(1.1);
+    border-color: #ffffff;
+}
+
+/* Chevron Button (Right) */
+.hover-btn-chevron {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(42, 42, 42, 0.75);
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.hover-btn-chevron svg {
+    width: 18px;
+    height: 18px;
+    fill: #ffffff;
+}
+
+.hover-btn-chevron:hover {
+    transform: scale(1.1);
+    border-color: #ffffff;
+}
+
+/* Meta Row */
+.hover-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.hover-match {
+    color: #22c55e;
+}
+
+.hover-tag-country {
+    border: 1px solid var(--border-light);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.hover-tag-temp {
+    background: rgba(229, 9, 20, 0.2);
+    border: 1px solid rgba(229, 9, 20, 0.45);
+    color: #ff8585;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+}
+
+/* Genres / Tags */
+.hover-genres-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    color: var(--text-muted);
 }
 
 /* News Headline Card */
@@ -1398,7 +1927,7 @@ body {
     background-color: var(--border-light);
 }
 
-/* Tool execution details card */
+/* Tool execution details box */
 .tool-result-box {
     background: rgba(56, 189, 248, 0.08);
     border-left: 3px solid #38bdf8;
@@ -1429,7 +1958,7 @@ body {
     border-radius: 6px;
     padding: 10px 14px;
     color: var(--text-primary);
-    font-size: 16px; /* Minimum 16px prevents iOS Safari auto-zoom */
+    font-size: 16px;
     outline: none;
     transition: border-color 0.2s;
     font-family: var(--font-body);
@@ -1507,9 +2036,14 @@ body {
         width: 210px;
     }
 
+    .hero-outer-frame {
+        margin-top: 75px;
+        max-width: 98%;
+    }
+
     .hero-billboard {
-        min-height: 65vh;
-        padding-top: 85px;
+        min-height: 60vh;
+        padding-top: 60px;
     }
 
     .hero-title {
@@ -1519,6 +2053,19 @@ body {
     .city-card {
         flex: 0 0 200px;
         height: 290px;
+    }
+
+    .top10-card {
+        flex: 0 0 240px;
+    }
+
+    .top10-rank {
+        font-size: 10rem;
+    }
+
+    .top10-poster-wrap {
+        width: 155px;
+        height: 225px;
     }
 
     .news-card {
@@ -1549,7 +2096,7 @@ body {
     }
 
     .nav-links {
-        display: none; /* Moved to bottom navigation for thumb reach */
+        display: none;
     }
 
     .brand-logo {
@@ -1561,7 +2108,6 @@ body {
         gap: 0.45rem;
     }
 
-    /* Hide desktop search box on mobile; show dedicated icon button instead */
     .search-box {
         display: none;
     }
@@ -1574,7 +2120,6 @@ body {
         display: block;
     }
 
-    /* Hide API status badge text on mobile to avoid overcrowding */
     .api-status-badge {
         display: none;
     }
@@ -1591,15 +2136,15 @@ body {
     }
 
     .agent-trigger-btn .btn-text {
-        display: none; /* Compact icon-only */
+        display: none;
     }
 
-    /* Mobile Bottom Navigation Enabled */
+    /* Mobile Bottom Navigation */
     .mobile-bottom-nav {
         display: flex;
     }
 
-    /* Focus Reset Bar adjustments */
+    /* Focus Reset Bar */
     .focus-reset-bar {
         top: 68px;
         width: 90%;
@@ -1612,12 +2157,27 @@ body {
         font-size: 0.78rem;
     }
 
-    /* Hero Section Mobile Adaptations */
+    /* Hero Billboard on Mobile */
+    .hero-outer-frame {
+        margin: 64px auto 0 auto;
+        max-width: 100%;
+        padding: 0 8px;
+    }
+
     .hero-billboard {
-        min-height: 54svh;
-        min-height: 390px;
-        padding: 72px 14px 18px 14px;
-        align-items: flex-end;
+        min-height: 52svh;
+        min-height: 380px;
+        padding: 50px 14px 18px 14px;
+        border-radius: 14px;
+    }
+
+    .hero-nav-arrow {
+        display: none; /* Swipe & dots used on mobile */
+    }
+
+    .hero-top-right-tags {
+        top: 14px;
+        right: 14px;
     }
 
     .hero-content {
@@ -1664,10 +2224,15 @@ body {
         min-height: 42px;
     }
 
+    .hero-indicators {
+        bottom: 12px;
+        right: 12px;
+    }
+
     /* Main Content Spacing on Mobile */
     .main-content {
-        margin-top: -10px;
-        padding: 0 12px 110px 12px; /* Generous bottom padding to clear mobile navigation */
+        margin-top: 15px;
+        padding: 0 12px 110px 12px;
         gap: 2.2rem;
     }
 
@@ -1697,7 +2262,7 @@ body {
         font-size: 0.76rem;
     }
 
-    /* Compact Poster Cards on Mobile with edge breathing room */
+    /* Compact Poster Cards on Mobile */
     .carousel-track {
         gap: 10px;
         padding: 0.6rem 2px;
@@ -1726,6 +2291,27 @@ body {
         font-size: 0.72rem;
     }
 
+    /* Mobile Top 10 Giant Numbers */
+    .top10-card {
+        flex: 0 0 205px;
+        margin-right: 10px;
+    }
+
+    .top10-rank {
+        font-size: 8.5rem;
+        margin-right: -24px;
+        -webkit-text-stroke: 3px var(--rank-stroke-color);
+    }
+
+    .top10-poster-wrap {
+        width: 135px;
+        height: 195px;
+    }
+
+    .top10-city-name {
+        font-size: 1.15rem;
+    }
+
     .news-card {
         flex: 0 0 255px;
         height: 175px;
@@ -1745,9 +2331,13 @@ body {
         font-size: 2.3rem;
     }
 
-    /* Mobile Carousel navigation buttons hidden in touch mode */
     .carousel-nav-btn {
         display: none;
+    }
+
+    /* Disable hover preview on touch screens */
+    .hover-preview-card {
+        display: none !important;
     }
 
     /* Agent Drawer Full Screen on Mobile */
@@ -1782,7 +2372,7 @@ body {
     }
 }
 
-/* Extra small mobile screens (320px - 360px) */
+/* Extra small mobile screens */
 @media (max-width: 360px) {
     .brand-logo {
         font-size: 1.55rem;
@@ -1795,5 +2385,18 @@ body {
 
     .hero-title {
         font-size: 2rem;
+    }
+
+    .top10-card {
+        flex: 0 0 185px;
+    }
+
+    .top10-rank {
+        font-size: 7.5rem;
+    }
+
+    .top10-poster-wrap {
+        width: 120px;
+        height: 175px;
     }
 }

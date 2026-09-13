@@ -23,7 +23,7 @@
             } catch (e) {}
         })();
     </script>
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -36,7 +36,7 @@
             <ul class="nav-links" id="desktopNavLinks">
                 <li><a href="#hero" class="active" id="navHome" data-target-section="hero">Home</a></li>
                 <li><a href="#trending-section" id="navCities" data-target-section="trending-section">Hubs</a></li>
-                <li><a href="#trending-section" id="navIndia" data-target-section="trending-section" data-filter-click="india">🇮🇳 India Special</a></li>
+                <li><a href="#top10-section" id="navTop10" data-target-section="top10-section">Top 10 India</a></li>
                 <li><a href="#weather-section" id="navWeather" data-target-section="weather-section">Weather Radar</a></li>
                 <li><a href="#news-section" id="navNews" data-target-section="news-section">Top Intelligence</a></li>
             </ul>
@@ -45,7 +45,7 @@
             <!-- Desktop Search Box -->
             <div class="search-box" id="searchBoxWrapper">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                <input type="text" id="citySearchInput" placeholder="Search city (e.g. Ghaziabad, Delhi)..." autocomplete="off" aria-label="Search city">
+                <input type="text" id="citySearchInput" placeholder="Search city (e.g. Ghaziabad, Tokyo)..." autocomplete="off" aria-label="Search city">
             </div>
 
             <!-- Mobile Search Icon Trigger -->
@@ -92,39 +92,61 @@
     </div>
 
     <!-- ====================================================================
-         Cinematic Hero Billboard
+         Cinematic Hero Billboard (Running Carousel Container)
          ==================================================================== -->
-    <section class="hero-billboard" id="hero">
-        <div class="hero-vignette"></div>
-        <div class="hero-content">
-            <div class="hero-series-badge">
-                <span class="red-n">N</span> C I T Y F L I X &nbsp; O R I G I N A L
-            </div>
-            <h1 class="hero-title" id="heroCityTitle">MUMBAI</h1>
-            <div class="hero-meta">
-                <span class="meta-match">99% MATCH</span>
-                <span class="meta-tag" id="heroRegionTag">🇮🇳 INCREDIBLE INDIA</span>
-                <span class="meta-tag">4K LIVE</span>
-                <div class="meta-weather" id="heroWeatherBadge">
-                    <span>🌦️</span>
-                    <span id="heroWeatherText">31°C Coastal Breeze</span>
+    <div class="hero-outer-frame">
+        <section class="hero-billboard" id="hero" aria-label="Featured City Carousel">
+            <div class="hero-vignette"></div>
+
+            <!-- Hero Nav Arrows -->
+            <button class="hero-nav-arrow prev" id="heroPrevBtn" aria-label="Previous featured city">&#8249;</button>
+            <button class="hero-nav-arrow next" id="heroNextBtn" aria-label="Next featured city">&#8250;</button>
+
+            <!-- Top Right Netflix Style Tag -->
+            <div class="hero-top-right-tags">
+                <div class="hero-rank-pill">
+                    <span class="rank-top10-badge">TOP 10</span>
+                    <span class="rank-subtext" id="heroRankSubtext">#1 in Trending Hubs</span>
                 </div>
             </div>
-            <p class="hero-synopsis" id="heroSynopsis">
-                The financial powerhouse of India and home of Bollywood, defined by Marine Drive, Victorian heritage, and unstoppable coastal energy.
-            </p>
-            <div class="hero-buttons">
-                <button class="btn-play" id="heroAskBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                    <span>Ask City Agent</span>
-                </button>
-                <button class="btn-more-info" id="heroInfoBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                    <span>Live Intelligence</span>
-                </button>
+
+            <!-- Hero Main Content -->
+            <div class="hero-content">
+                <div class="hero-series-badge">
+                    <span class="red-n">N</span> C I T Y F L I X &nbsp; O R I G I N A L
+                </div>
+                <h1 class="hero-title" id="heroCityTitle">MUMBAI</h1>
+                <div class="hero-meta">
+                    <span class="meta-match">99% MATCH</span>
+                    <span class="meta-tag" id="heroRegionTag">🇮🇳 INCREDIBLE INDIA</span>
+                    <span class="meta-tag">4K LIVE</span>
+                    <span class="meta-tag">SATELLITE SYNCED</span>
+                    <div class="meta-weather" id="heroWeatherBadge">
+                        <span>🌦️</span>
+                        <span id="heroWeatherText">31°C Coastal Breeze</span>
+                    </div>
+                </div>
+                <p class="hero-synopsis" id="heroSynopsis">
+                    The financial powerhouse of India and home of Bollywood, defined by Marine Drive, Victorian heritage, and unstoppable coastal energy.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-play" id="heroAskBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        <span>Ask City Agent</span>
+                    </button>
+                    <button class="btn-more-info" id="heroInfoBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        <span>Live Intelligence</span>
+                    </button>
+                </div>
             </div>
-        </div>
-    </section>
+
+            <!-- Netflix Segmented Carousel Dash Indicators -->
+            <div class="hero-indicators" id="heroIndicators" aria-label="Carousel slide indicator">
+                <!-- Dynamically populated progress dashes -->
+            </div>
+        </section>
+    </div>
 
     <!-- ====================================================================
          Netflix Content Rows & Carousels
@@ -160,7 +182,25 @@
             </div>
         </section>
 
-        <!-- Row 2: Live Intelligence Headlines -->
+        <!-- Row 2: Netflix Signature "Top 10 Cities in India Today" with Giant Numbers -->
+        <section class="row-section" id="top10-section">
+            <div class="row-header">
+                <div class="row-header-title-group">
+                    <h2 class="row-title">Top 10 Cities in India Today</h2>
+                    <span class="row-subtitle">Ranked by real-time intelligence telemetry & traveler buzz</span>
+                </div>
+            </div>
+
+            <div class="carousel-wrapper">
+                <button class="carousel-nav-btn prev" id="top10CarouselPrev" aria-label="Previous Top 10 cities">&#8249;</button>
+                <div class="carousel-track top10-track" id="top10Carousel" tabindex="0" role="region" aria-label="Top 10 Indian Hubs">
+                    <!-- Dynamically populated with giant numbered cards -->
+                </div>
+                <button class="carousel-nav-btn next" id="top10CarouselNext" aria-label="Next Top 10 cities">&#8250;</button>
+            </div>
+        </section>
+
+        <!-- Row 3: Live Intelligence Headlines -->
         <section class="row-section" id="news-section">
             <div class="row-header">
                 <div class="row-header-title-group">
@@ -177,7 +217,7 @@
             </div>
         </section>
 
-        <!-- Row 3: Global Weather Radar -->
+        <!-- Row 4: Global Weather Radar -->
         <section class="row-section" id="weather-section">
             <div class="row-header">
                 <div class="row-header-title-group">
@@ -197,6 +237,44 @@
     </main>
 
     <!-- ====================================================================
+         Netflix Upmarket Hover Preview Card (Expandable Popover Window)
+         ==================================================================== -->
+    <div class="hover-preview-card" id="hoverPreviewCard" aria-hidden="true">
+        <div class="hover-card-media">
+            <img src="" alt="" class="hover-card-img" id="hoverCardImg">
+            <div class="hover-card-vignette"></div>
+            <span class="hover-card-badge-top" id="hoverCardTopBadge">TOP 10</span>
+            <div class="hover-card-title-overlay" id="hoverCardTitle">MUMBAI</div>
+        </div>
+        <div class="hover-card-content">
+            <div class="hover-action-row">
+                <div class="hover-action-left">
+                    <button class="hover-btn-play" id="hoverPlayBtn" title="Feature in Hero Billboard" aria-label="Feature City">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <button class="hover-btn-circle" id="hoverTerminalBtn" title="Ask Agent in Terminal" aria-label="Ask in Terminal">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    </button>
+                    <button class="hover-btn-circle" id="hoverLikeBtn" title="Bookmark City" aria-label="Bookmark">
+                        <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                    </button>
+                </div>
+                <button class="hover-btn-chevron" id="hoverMoreInfoBtn" title="Live Intelligence Briefing" aria-label="More Info">
+                    <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                </button>
+            </div>
+            <div class="hover-meta-row">
+                <span class="hover-match" id="hoverCardMatch">99% Match</span>
+                <span class="hover-tag-country" id="hoverCardCountry">INDIA</span>
+                <span class="hover-tag-temp" id="hoverCardTemp">31°C</span>
+            </div>
+            <div class="hover-genres-row" id="hoverCardTags">
+                <span>Metropolis</span><span>•</span><span>Coastal</span><span>•</span><span>Heritage</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
          Mobile Bottom Navigation Bar (App Experience)
          ==================================================================== -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
@@ -204,9 +282,9 @@
             <span class="mob-icon">🏠</span>
             <span class="mob-label">Home</span>
         </a>
-        <a href="#trending-section" class="mob-nav-item" id="mobNavIndia" data-target-section="trending-section" data-filter-click="india">
-            <span class="mob-icon">🇮🇳</span>
-            <span class="mob-label">India</span>
+        <a href="#top10-section" class="mob-nav-item" id="mobNavTop10" data-target-section="top10-section">
+            <span class="mob-icon">🔟</span>
+            <span class="mob-label">Top 10</span>
         </a>
         <a href="#trending-section" class="mob-nav-item" id="mobNavHubs" data-target-section="trending-section">
             <span class="mob-icon">🌐</span>
@@ -260,6 +338,6 @@
         </div>
     </aside>
 
-    <script src="app.js?v=2"></script>
+    <script src="app.js?v=4"></script>
 </body>
 </html>
