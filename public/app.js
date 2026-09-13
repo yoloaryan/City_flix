@@ -42,15 +42,6 @@ const GLOBAL_CITIES = [
         desc: "The Silicon Valley of India and Garden City, boasting premier tech hubs, lush parks, innovative startups, and pleasant high-altitude weather."
     },
     {
-        name: "Hyderabad",
-        country: "India",
-        category: "india",
-        image: "https://images.unsplash.com/photo-1605649487212-47bdab064df8?auto=format&fit=crop&w=1200&q=80",
-        temp: "28°C",
-        condition: "Clear Sky",
-        desc: "The historic City of Pearls turned Cyberabad powerhouse, famed for the iconic Charminar, Nizami culinary heritage, and biotech parks."
-    },
-    {
         name: "Kolkata",
         country: "India",
         category: "india",
@@ -85,15 +76,6 @@ const GLOBAL_CITIES = [
         temp: "28°C",
         condition: "Sunny Coast",
         desc: "India's tropical coastal paradise celebrated for golden Arabian Sea beaches, Portuguese baroque churches, and vibrant susegad lifestyle."
-    },
-    {
-        name: "Ahmedabad",
-        country: "India",
-        category: "india",
-        image: "https://images.unsplash.com/photo-1609766857329-87389a9f4569?auto=format&fit=crop&w=1200&q=80",
-        temp: "32°C",
-        condition: "Clear & Sunny",
-        desc: "UNESCO World Heritage City along the Sabarmati, celebrated for Gandhi Ashram, intricate stepwells, and booming entrepreneurial industry."
     },
     {
         name: "Varanasi",
