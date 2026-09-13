@@ -202,19 +202,7 @@ const newsCarouselNext = document.getElementById("newsCarouselNext");
 const weatherCarouselPrev = document.getElementById("weatherCarouselPrev");
 const weatherCarouselNext = document.getElementById("weatherCarouselNext");
 
-// Hover Preview Card Elements
-const hoverPreviewCard = document.getElementById("hoverPreviewCard");
-const hoverCardImg = document.getElementById("hoverCardImg");
-const hoverCardTopBadge = document.getElementById("hoverCardTopBadge");
-const hoverCardTitle = document.getElementById("hoverCardTitle");
-const hoverPlayBtn = document.getElementById("hoverPlayBtn");
-const hoverTerminalBtn = document.getElementById("hoverTerminalBtn");
-const hoverLikeBtn = document.getElementById("hoverLikeBtn");
-const hoverMoreInfoBtn = document.getElementById("hoverMoreInfoBtn");
-const hoverCardMatch = document.getElementById("hoverCardMatch");
-const hoverCardCountry = document.getElementById("hoverCardCountry");
-const hoverCardTemp = document.getElementById("hoverCardTemp");
-const hoverCardTags = document.getElementById("hoverCardTags");
+
 
 const citySearchInput = document.getElementById("citySearchInput");
 const apiStatusBadge = document.getElementById("apiStatusBadge");
@@ -300,7 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCitiesCarousel();
     renderTop10Carousel();
     setupHeroCarousel();
-    setupHoverPreviewCard();
     setHeroCity(activeCity);
     fetchCityOverview(activeCity.name);
     setupEventListeners();
@@ -839,8 +826,6 @@ function renderCitiesCarousel() {
             }
         });
 
-        attachCardHoverListener(card, city, false);
-
         citiesCarousel.appendChild(card);
     });
 }
@@ -915,8 +900,6 @@ function renderTop10Carousel() {
                 selectHandler();
             }
         });
-
-        attachCardHoverListener(card, city, true);
 
         top10Carousel.appendChild(card);
     });
@@ -1422,177 +1405,4 @@ function getCityTags(cityName) {
     return ["Metropolitan Hub", "Live Telemetry", "Culture & Buzz"];
 }
 
-function setupHoverPreviewCard() {
-    if (!hoverPreviewCard) return;
 
-    // Feature / Play Button (White circle ▶)
-    if (hoverPlayBtn) {
-        hoverPlayBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (currentHoveredCity) {
-                setHeroCity(currentHoveredCity);
-                fetchCityOverview(currentHoveredCity.name);
-                resetSectionFocus();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-            hideHoverCard(true);
-        });
-    }
-
-    // Terminal Quick Prompt Button (+ circle)
-    if (hoverTerminalBtn) {
-        hoverTerminalBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (currentHoveredCity) {
-                openDrawer();
-                sendUserMessage(`What is the current weather and top news in ${currentHoveredCity.name}?`);
-            }
-            hideHoverCard(true);
-        });
-    }
-
-    // Bookmark / Like Button (Thumbs up)
-    if (hoverLikeBtn) {
-        hoverLikeBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            hoverLikeBtn.classList.toggle("liked");
-            const isLiked = hoverLikeBtn.classList.contains("liked");
-            hoverLikeBtn.style.borderColor = isLiked ? "var(--netflix-red)" : "rgba(255, 255, 255, 0.45)";
-            const svg = hoverLikeBtn.querySelector("svg");
-            if (svg) svg.style.fill = isLiked ? "var(--netflix-red)" : "#ffffff";
-        });
-    }
-
-    // Deep Telemetry / More Info Button (Chevron ⌄)
-    if (hoverMoreInfoBtn) {
-        hoverMoreInfoBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (currentHoveredCity) {
-                setHeroCity(currentHoveredCity);
-                fetchCityOverview(currentHoveredCity.name);
-                focusSection("weather-section");
-            }
-            hideHoverCard(true);
-        });
-    }
-
-    // Keep preview visible while mouse is hovered inside it
-    hoverPreviewCard.addEventListener("mouseenter", () => {
-        if (hoverHideTimer) {
-            clearTimeout(hoverHideTimer);
-            hoverHideTimer = null;
-        }
-    });
-
-    hoverPreviewCard.addEventListener("mouseleave", () => {
-        hideHoverCard(false);
-    });
-}
-
-function attachCardHoverListener(cardEl, city, isTop10 = false) {
-    if (!hoverPreviewCard) return;
-
-    const onEnter = () => {
-        // Disable on touch devices and small mobile viewports
-        if (window.innerWidth <= 768) return;
-
-        if (hoverHideTimer) {
-            clearTimeout(hoverHideTimer);
-            hoverHideTimer = null;
-        }
-
-        if (hoverShowTimer) clearTimeout(hoverShowTimer);
-
-        hoverShowTimer = setTimeout(() => {
-            showHoverCard(cardEl, city, isTop10);
-        }, 150);
-    };
-
-    const onLeave = () => {
-        if (hoverShowTimer) {
-            clearTimeout(hoverShowTimer);
-            hoverShowTimer = null;
-        }
-        hideHoverCard(false);
-    };
-
-    cardEl.addEventListener("mouseenter", onEnter);
-    cardEl.addEventListener("pointerenter", onEnter);
-    cardEl.addEventListener("mouseleave", onLeave);
-    cardEl.addEventListener("pointerleave", onLeave);
-}
-
-function showHoverCard(cardEl, city, isTop10) {
-    if (!hoverPreviewCard || window.innerWidth <= 768) return;
-    currentHoveredCity = city;
-
-    // Populate data
-    if (hoverCardImg) {
-        hoverCardImg.src = city.image;
-        hoverCardImg.alt = city.name;
-    }
-    if (hoverCardTitle) hoverCardTitle.textContent = city.name.toUpperCase();
-    if (hoverCardTopBadge) {
-        hoverCardTopBadge.textContent = isTop10 ? "TOP 10" : "FEATURED";
-        hoverCardTopBadge.style.background = isTop10 ? "var(--netflix-red)" : "rgba(30, 41, 59, 0.9)";
-    }
-    if (hoverCardMatch) {
-        const matches = ["99% Match", "98% Match", "97% Match", "96% Match"];
-        const matchIdx = (city.name.length) % matches.length;
-        hoverCardMatch.textContent = matches[matchIdx];
-    }
-    if (hoverCardCountry) {
-        hoverCardCountry.textContent = city.country.toUpperCase();
-    }
-    if (hoverCardTemp) {
-        hoverCardTemp.textContent = city.temp;
-    }
-    if (hoverCardTags) {
-        const tags = getCityTags(city.name);
-        hoverCardTags.innerHTML = tags.map((t, i) => `<span>${t}</span>${i < tags.length - 1 ? '<span>•</span>' : ''}`).join('');
-    }
-
-    // Reset like button style
-    if (hoverLikeBtn) {
-        hoverLikeBtn.classList.remove("liked");
-        hoverLikeBtn.style.borderColor = "rgba(255, 255, 255, 0.45)";
-        const svg = hoverLikeBtn.querySelector("svg");
-        if (svg) svg.style.fill = "#ffffff";
-    }
-
-    // Calculate position
-    const rect = cardEl.getBoundingClientRect();
-    const cardWidth = 320;
-    const cardHeight = 310;
-
-    let left = rect.left + (rect.width / 2) - (cardWidth / 2);
-    let top = rect.top + (rect.height / 2) - (cardHeight / 2);
-
-    // Keep within viewport boundaries
-    left = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, left));
-    top = Math.max(70, Math.min(window.innerHeight - cardHeight - 20, top));
-
-    hoverPreviewCard.style.left = `${left}px`;
-    hoverPreviewCard.style.top = `${top}px`;
-    hoverPreviewCard.classList.add("visible");
-    hoverPreviewCard.setAttribute("aria-hidden", "false");
-}
-
-function hideHoverCard(immediate = false) {
-    if (!hoverPreviewCard) return;
-
-    if (immediate) {
-        if (hoverHideTimer) clearTimeout(hoverHideTimer);
-        hoverPreviewCard.classList.remove("visible");
-        hoverPreviewCard.setAttribute("aria-hidden", "true");
-        currentHoveredCity = null;
-        return;
-    }
-
-    if (hoverHideTimer) clearTimeout(hoverHideTimer);
-    hoverHideTimer = setTimeout(() => {
-        hoverPreviewCard.classList.remove("visible");
-        hoverPreviewCard.setAttribute("aria-hidden", "true");
-        currentHoveredCity = null;
-    }, 180);
-}
