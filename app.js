@@ -1,12 +1,116 @@
 // ==============================================================================
 // CITYFLIX - Client Application Logic
+// Enhanced with Indian Hubs, Dark/Light Mode, and Mobile/Tablet Responsiveness
 // ==============================================================================
 
 const GLOBAL_CITIES = [
+    // --- Incredible India Metros & Cultural Hubs ---
+    {
+        name: "Mumbai",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=1200&q=80",
+        temp: "31°C",
+        condition: "Coastal Breeze",
+        desc: "The financial powerhouse of India and home of Bollywood, defined by Marine Drive, Victorian heritage, and unstoppable coastal energy."
+    },
+    {
+        name: "Delhi",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80",
+        temp: "29°C",
+        condition: "Warm Haze",
+        desc: "India's historic capital blending Mughal grandeur like the Red Fort and India Gate with the bustling political and cultural heartbeat of the nation."
+    },
+    {
+        name: "Ghaziabad",
+        country: "India",
+        category: "india",
+        image: "ghaziabad.jpg",
+        temp: "29°C",
+        condition: "Hazy Sun",
+        desc: "Gateway of Uttar Pradesh in Delhi-NCR, powered by the cutting-edge Namo Bharat Rapid Rail (RRTS), Hindon civil enclave, and thriving industrial corridors."
+    },
+    {
+        name: "Bengaluru",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=80",
+        temp: "24°C",
+        condition: "Pleasant Breezes",
+        desc: "The Silicon Valley of India and Garden City, boasting premier tech hubs, lush parks, innovative startups, and pleasant high-altitude weather."
+    },
+    {
+        name: "Hyderabad",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1605649487212-47bdab064df8?auto=format&fit=crop&w=1200&q=80",
+        temp: "28°C",
+        condition: "Clear Sky",
+        desc: "The historic City of Pearls turned Cyberabad powerhouse, famed for the iconic Charminar, Nizami culinary heritage, and biotech parks."
+    },
+    {
+        name: "Kolkata",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=1200&q=80",
+        temp: "30°C",
+        condition: "Humid Sunshine",
+        desc: "The City of Joy and cultural capital of India, adorned with colonial architecture, the magnificent Howrah Bridge, and rich literary heritage."
+    },
+    {
+        name: "Chennai",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=80",
+        temp: "32°C",
+        condition: "Tropical Warmth",
+        desc: "Gateway to South India renowned for Marina Beach, vibrant classical Carnatic arts, ancient Dravidian temples, and automotive industry."
+    },
+    {
+        name: "Jaipur",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80",
+        temp: "27°C",
+        condition: "Sunny & Dry",
+        desc: "The Pink City of Rajasthan, adorned with Hawa Mahal, Amber Palace, rich Rajputana folklore, and vibrant artisan bazaars."
+    },
+    {
+        name: "Goa",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80",
+        temp: "28°C",
+        condition: "Sunny Coast",
+        desc: "India's tropical coastal paradise celebrated for golden Arabian Sea beaches, Portuguese baroque churches, and vibrant susegad lifestyle."
+    },
+    {
+        name: "Ahmedabad",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1609766857329-87389a9f4569?auto=format&fit=crop&w=1200&q=80",
+        temp: "32°C",
+        condition: "Clear & Sunny",
+        desc: "UNESCO World Heritage City along the Sabarmati, celebrated for Gandhi Ashram, intricate stepwells, and booming entrepreneurial industry."
+    },
+    {
+        name: "Varanasi",
+        country: "India",
+        category: "india",
+        image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1200&q=80",
+        temp: "28°C",
+        condition: "Gentle Haze",
+        desc: "One of the oldest continuously inhabited cities on Earth, featuring sacred Ganga ghats, devotional evening aartis, and profound spiritual roots."
+    },
+
+    // --- Global Metropolitan Capitals ---
     {
         name: "Barcelona",
         country: "Spain",
-        image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1000&q=80",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1200&q=80",
         temp: "26°C",
         condition: "Clear Sky",
         desc: "Mediterranean jewel famous for Sagrada Familia, vibrant coastlines, and thriving culture."
@@ -14,7 +118,8 @@ const GLOBAL_CITIES = [
     {
         name: "Tokyo",
         country: "Japan",
-        image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80",
         temp: "22°C",
         condition: "Partly Cloudy",
         desc: "The hyper-modern metropolis blending neon-lit skyscrapers with historic temples and culinary artistry."
@@ -22,55 +127,62 @@ const GLOBAL_CITIES = [
     {
         name: "New York",
         country: "United States",
-        image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1000&q=80",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80",
         temp: "19°C",
         condition: "Breezy",
         desc: "The iconic global capital of finance, culture, and non-stop energy from Manhattan to Brooklyn."
     },
     {
-        name: "Paris",
-        country: "France",
-        image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80",
-        temp: "18°C",
-        condition: "Light Rain",
-        desc: "The City of Light renowned for haute cuisine, art museums, fashion, and romantic boulevards."
-    },
-    {
         name: "London",
         country: "United Kingdom",
-        image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80",
         temp: "16°C",
         condition: "Overcast",
         desc: "Historic Thames-side metropolis featuring royal landmarks, modern fintech, and global theater."
     },
     {
+        name: "Paris",
+        country: "France",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80",
+        temp: "18°C",
+        condition: "Light Rain",
+        desc: "The City of Light renowned for haute cuisine, art museums, fashion, and romantic boulevards."
+    },
+    {
         name: "Dubai",
         country: "United Arab Emirates",
-        image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1000&q=80",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
         temp: "35°C",
         condition: "Sunny",
         desc: "Ultra-luxury oasis featuring record-breaking skyscrapers, desert dunes, and global shopping hubs."
     },
     {
-        name: "Mumbai",
-        country: "India",
-        image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=1000&q=80",
-        temp: "31°C",
-        condition: "Tropical Humid",
-        desc: "The financial engine of India, teeming with Bollywood glamour, heritage architecture, and coastal spirit."
-    },
-    {
         name: "Singapore",
         country: "Singapore",
-        image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1000&q=80",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80",
         temp: "29°C",
         condition: "Scattered Clouds",
         desc: "The futuristic garden city known for Marina Bay, sustainable architecture, and culinary diversity."
+    },
+    {
+        name: "Sydney",
+        country: "Australia",
+        category: "global",
+        image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80",
+        temp: "21°C",
+        condition: "Ocean Breeze",
+        desc: "Australia's harbor city famed for the Opera House, Bondi Beach surf, and relaxed coastal sophistication."
     }
 ];
 
 // App State
-let activeCity = GLOBAL_CITIES[0];
+let activeCity = GLOBAL_CITIES[0]; // Defaults to Mumbai (first Indian hub)
+let activeCategory = "all";
 let chatHistory = [];
 let pendingApproval = null;
 
@@ -80,17 +192,28 @@ const heroBillboard = document.getElementById("hero");
 const heroCityTitle = document.getElementById("heroCityTitle");
 const heroWeatherBadge = document.getElementById("heroWeatherBadge");
 const heroWeatherText = document.getElementById("heroWeatherText");
+const heroRegionTag = document.getElementById("heroRegionTag");
 const heroSynopsis = document.getElementById("heroSynopsis");
 const heroAskBtn = document.getElementById("heroAskBtn");
 const heroInfoBtn = document.getElementById("heroInfoBtn");
 
+const trendingRowTitle = document.getElementById("trendingRowTitle");
+const cityCategoryTabs = document.getElementById("cityCategoryTabs");
 const citiesCarousel = document.getElementById("citiesCarousel");
 const newsCarousel = document.getElementById("newsCarousel");
 const weatherCarousel = document.getElementById("weatherCarousel");
 
+const citiesCarouselPrev = document.getElementById("citiesCarouselPrev");
+const citiesCarouselNext = document.getElementById("citiesCarouselNext");
+const newsCarouselPrev = document.getElementById("newsCarouselPrev");
+const newsCarouselNext = document.getElementById("newsCarouselNext");
+const weatherCarouselPrev = document.getElementById("weatherCarouselPrev");
+const weatherCarouselNext = document.getElementById("weatherCarouselNext");
+
 const citySearchInput = document.getElementById("citySearchInput");
 const apiStatusBadge = document.getElementById("apiStatusBadge");
 const apiStatusText = document.getElementById("apiStatusText");
+const themeToggleBtn = document.getElementById("themeToggleBtn");
 
 const agentDrawer = document.getElementById("agentDrawer");
 const drawerOverlay = document.getElementById("drawerOverlay");
@@ -101,25 +224,76 @@ const approvalContainer = document.getElementById("approvalContainer");
 const agentChatForm = document.getElementById("agentChatForm");
 const agentInput = document.getElementById("agentInput");
 
+// Mobile Bottom Nav Elements
+const mobNavHome = document.getElementById("mobNavHome");
+const mobNavIndia = document.getElementById("mobNavIndia");
+const mobNavHubs = document.getElementById("mobNavHubs");
+const mobNavWeather = document.getElementById("mobNavWeather");
+const mobNavTerminal = document.getElementById("mobNavTerminal");
+const navIndia = document.getElementById("navIndia");
+
 // ==============================================================================
 // Initialization
 // ==============================================================================
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
     checkApiStatus();
     renderCitiesCarousel();
     setHeroCity(activeCity);
     fetchCityOverview(activeCity.name);
     setupEventListeners();
+    setupCarouselNavButtons();
+    setupCategoryTabs();
+    setupMobileNav();
 });
 
 // Navbar scroll blur effect
 window.addEventListener("scroll", () => {
-    if (window.scrollY > 50) {
+    if (window.scrollY > 40) {
         navbar.classList.add("scrolled");
     } else {
         navbar.classList.remove("scrolled");
     }
 });
+
+// ==============================================================================
+// Dark / Light Mode System
+// ==============================================================================
+function initTheme() {
+    const savedTheme = localStorage.getItem("cityflix_theme") || 
+        (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    applyTheme(savedTheme);
+
+    // Listen to OS theme changes if user hasn't explicitly set a custom theme in this session
+    if (window.matchMedia) {
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+            if (!localStorage.getItem("cityflix_theme_user_locked")) {
+                applyTheme(e.matches ? "dark" : "light");
+            }
+        });
+    }
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("cityflix_theme", theme);
+
+    const metaColor = document.getElementById("metaThemeColor");
+    if (metaColor) {
+        metaColor.setAttribute("content", theme === "light" ? "#f8fafc" : "#141414");
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.setAttribute("aria-label", `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`);
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    localStorage.setItem("cityflix_theme_user_locked", "true");
+    applyTheme(newTheme);
+}
 
 // ==============================================================================
 // API Status Checker
@@ -129,14 +303,16 @@ async function checkApiStatus() {
         const res = await fetch("/api/status");
         const data = await res.json();
         if (data.ready) {
-            apiStatusText.textContent = "AI Agent Connected";
+            if (apiStatusText) apiStatusText.textContent = "AI Agent Connected";
         } else {
-            apiStatusText.textContent = "Partial API Keys";
-            apiStatusBadge.style.color = "#f59e0b";
-            apiStatusBadge.style.borderColor = "rgba(245, 158, 11, 0.4)";
+            if (apiStatusText) apiStatusText.textContent = "Partial API Keys";
+            if (apiStatusBadge) {
+                apiStatusBadge.style.color = "#f59e0b";
+                apiStatusBadge.style.borderColor = "rgba(245, 158, 11, 0.4)";
+            }
         }
     } catch (e) {
-        apiStatusText.textContent = "Offline Mode";
+        if (apiStatusText) apiStatusText.textContent = "Offline Mode";
     }
 }
 
@@ -149,6 +325,66 @@ function setHeroCity(cityData) {
     heroSynopsis.textContent = cityData.desc;
     heroWeatherText.textContent = `${cityData.temp} ${cityData.condition}`;
     heroBillboard.style.backgroundImage = `url('${cityData.image}')`;
+    
+    if (heroRegionTag) {
+        if (cityData.category === "india" || cityData.country.toLowerCase() === "india") {
+            heroRegionTag.textContent = "🇮🇳 INCREDIBLE INDIA";
+            heroRegionTag.style.borderColor = "rgba(255, 153, 51, 0.6)";
+            heroRegionTag.style.color = "var(--india-accent)";
+        } else {
+            heroRegionTag.textContent = `${cityData.country.toUpperCase()} HUB`;
+            heroRegionTag.style.borderColor = "var(--border-light)";
+            heroRegionTag.style.color = "var(--text-secondary)";
+        }
+    }
+}
+
+// ==============================================================================
+// Category Tabs & Filtering
+// ==============================================================================
+function setupCategoryTabs() {
+    if (!cityCategoryTabs) return;
+
+    const tabs = cityCategoryTabs.querySelectorAll(".category-tab");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => {
+                t.classList.remove("active");
+                t.setAttribute("aria-selected", "false");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+
+            activeCategory = tab.getAttribute("data-category");
+            updateRowTitle();
+            renderCitiesCarousel();
+        });
+    });
+}
+
+function updateRowTitle() {
+    if (!trendingRowTitle) return;
+    if (activeCategory === "india") {
+        trendingRowTitle.textContent = "🇮🇳 Incredible India Hubs & Metros";
+    } else if (activeCategory === "global") {
+        trendingRowTitle.textContent = "🌍 Global Metros & World Capitals";
+    } else {
+        trendingRowTitle.textContent = "Featured Metropolitan Hubs";
+    }
+}
+
+function selectCategoryFilter(category) {
+    activeCategory = category;
+    if (cityCategoryTabs) {
+        const tabs = cityCategoryTabs.querySelectorAll(".category-tab");
+        tabs.forEach(tab => {
+            const match = tab.getAttribute("data-category") === category;
+            tab.classList.toggle("active", match);
+            tab.setAttribute("aria-selected", match ? "true" : "false");
+        });
+    }
+    updateRowTitle();
+    renderCitiesCarousel();
 }
 
 // ==============================================================================
@@ -156,10 +392,26 @@ function setHeroCity(cityData) {
 // ==============================================================================
 function renderCitiesCarousel() {
     citiesCarousel.innerHTML = "";
-    GLOBAL_CITIES.forEach(city => {
+
+    const filtered = GLOBAL_CITIES.filter(city => {
+        if (activeCategory === "all") return true;
+        return city.category === activeCategory;
+    });
+
+    filtered.forEach(city => {
         const card = document.createElement("div");
         card.className = "city-card";
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `Select ${city.name}, ${city.country}`);
+
+        const isIndia = city.category === "india" || city.country.toLowerCase() === "india";
+        const badgeHtml = isIndia 
+            ? `<div class="city-card-badge-top india"><span>🇮🇳</span> India Special</div>`
+            : `<div class="city-card-badge-top"><span>🌍</span> ${city.country}</div>`;
+
         card.innerHTML = `
+            ${badgeHtml}
             <img src="${city.image}" alt="${city.name}" class="city-card-img" loading="lazy">
             <div class="city-card-overlay">
                 <div class="city-card-name">${city.name}</div>
@@ -170,11 +422,21 @@ function renderCitiesCarousel() {
                 </div>
             </div>
         `;
-        card.addEventListener("click", () => {
+
+        const selectHandler = () => {
             setHeroCity(city);
             fetchCityOverview(city.name);
             window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        card.addEventListener("click", selectHandler);
+        card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                selectHandler();
+            }
         });
+
         citiesCarousel.appendChild(card);
     });
 }
@@ -202,24 +464,27 @@ async function fetchCityOverview(cityName) {
 
 function renderWeatherSection(city, weatherText) {
     weatherCarousel.innerHTML = `
-        <div class="weather-card">
+        <div class="weather-card" tabindex="0" role="region" aria-label="Current Live Weather for ${city}">
             <div class="weather-header">
                 <div class="weather-city">${city}</div>
-                <div class="weather-condition">Satellite Sensor</div>
+                <div class="weather-condition">Satellite Telemetry</div>
             </div>
             <div class="weather-temp-huge">Live</div>
-            <div style="font-size: 0.9rem; color: #cbd5e1;">${weatherText}</div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary);">${weatherText}</div>
             <div class="weather-details-grid">
-                <div>Source: OpenWeatherMap</div>
+                <div>Source: OpenWeather</div>
                 <div>Status: Real-time</div>
             </div>
         </div>
     `;
 
     // Also populate adjacent reference cards for comparison
-    GLOBAL_CITIES.filter(c => c.name !== city).slice(0, 3).forEach(c => {
+    GLOBAL_CITIES.filter(c => c.name.toLowerCase() !== city.toLowerCase()).slice(0, 4).forEach(c => {
         const card = document.createElement("div");
         card.className = "weather-card";
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `Switch to ${c.name}`);
         card.innerHTML = `
             <div class="weather-header">
                 <div class="weather-city">${c.name}</div>
@@ -249,7 +514,7 @@ function renderNewsSection(city, newsText) {
         newsCarousel.innerHTML = `
             <div class="news-card">
                 <div class="news-card-badge">🔴 TAVILY RADAR</div>
-                <div class="news-card-title">Live intelligence monitoring active for ${city}. Query the agent for instant briefings.</div>
+                <div class="news-card-title">Live intelligence monitoring active for ${city}. Query the terminal agent for instant briefings.</div>
                 <div class="news-card-footer">
                     <span>Verified Search</span>
                     <span>Just Now</span>
@@ -262,20 +527,101 @@ function renderNewsSection(city, newsText) {
     lines.forEach((block, idx) => {
         const card = document.createElement("div");
         card.className = "news-card";
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
         card.innerHTML = `
             <div class="news-card-badge">🔴 TAVILY BREAKING #${idx + 1}</div>
             <div class="news-card-title">${escapeHtml(block.replace(/URL:.*$/m, ''))}</div>
             <div class="news-card-footer">
                 <span>Cityflix Intelligence</span>
-                <span style="color: #38bdf8;">Ask Agent &rarr;</span>
+                <span style="color: #38bdf8; font-weight: 600;">Ask Agent &rarr;</span>
             </div>
         `;
         card.addEventListener("click", () => {
             openDrawer();
-            sendUserMessage(`Tell me more about the latest news in ${city}`);
+            sendUserMessage(`Tell me more about this recent news in ${city}: ${block.substring(0, 100)}`);
         });
         newsCarousel.appendChild(card);
     });
+}
+
+// ==============================================================================
+// Carousel Navigation Controls
+// ==============================================================================
+function setupCarouselNavButtons() {
+    const attachNav = (prevBtn, nextBtn, track) => {
+        if (!prevBtn || !nextBtn || !track) return;
+        const scrollAmount = 350;
+        prevBtn.addEventListener("click", () => {
+            track.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+        });
+        nextBtn.addEventListener("click", () => {
+            track.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        });
+    };
+
+    attachNav(citiesCarouselPrev, citiesCarouselNext, citiesCarousel);
+    attachNav(newsCarouselPrev, newsCarouselNext, newsCarousel);
+    attachNav(weatherCarouselPrev, weatherCarouselNext, weatherCarousel);
+}
+
+// ==============================================================================
+// Mobile Bottom Nav Setup
+// ==============================================================================
+function setupMobileNav() {
+    if (mobNavHome) {
+        mobNavHome.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            updateActiveMobNav(mobNavHome);
+        });
+    }
+
+    if (mobNavIndia) {
+        mobNavIndia.addEventListener("click", (e) => {
+            e.preventDefault();
+            selectCategoryFilter("india");
+            document.getElementById("trending-section")?.scrollIntoView({ behavior: "smooth" });
+            updateActiveMobNav(mobNavIndia);
+        });
+    }
+
+    if (mobNavHubs) {
+        mobNavHubs.addEventListener("click", (e) => {
+            e.preventDefault();
+            selectCategoryFilter("all");
+            document.getElementById("trending-section")?.scrollIntoView({ behavior: "smooth" });
+            updateActiveMobNav(mobNavHubs);
+        });
+    }
+
+    if (mobNavWeather) {
+        mobNavWeather.addEventListener("click", (e) => {
+            e.preventDefault();
+            document.getElementById("weather-section")?.scrollIntoView({ behavior: "smooth" });
+            updateActiveMobNav(mobNavWeather);
+        });
+    }
+
+    if (mobNavTerminal) {
+        mobNavTerminal.addEventListener("click", () => {
+            openDrawer();
+        });
+    }
+
+    // Top navbar "India Special" link
+    if (navIndia) {
+        navIndia.addEventListener("click", (e) => {
+            e.preventDefault();
+            selectCategoryFilter("india");
+            document.getElementById("trending-section")?.scrollIntoView({ behavior: "smooth" });
+        });
+    }
+}
+
+function updateActiveMobNav(activeItem) {
+    document.querySelectorAll(".mob-nav-item").forEach(item => item.classList.remove("active"));
+    if (activeItem) activeItem.classList.add("active");
 }
 
 // ==============================================================================
@@ -284,7 +630,9 @@ function renderNewsSection(city, newsText) {
 function openDrawer() {
     agentDrawer.classList.add("open");
     drawerOverlay.classList.add("open");
-    agentInput.focus();
+    setTimeout(() => {
+        agentInput.focus();
+    }, 200);
 }
 
 function closeDrawer() {
@@ -293,38 +641,49 @@ function closeDrawer() {
 }
 
 function setupEventListeners() {
-    openDrawerBtn.addEventListener("click", openDrawer);
-    closeDrawerBtn.addEventListener("click", closeDrawer);
-    drawerOverlay.addEventListener("click", closeDrawer);
+    if (openDrawerBtn) openDrawerBtn.addEventListener("click", openDrawer);
+    if (closeDrawerBtn) closeDrawerBtn.addEventListener("click", closeDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener("click", closeDrawer);
 
-    heroAskBtn.addEventListener("click", () => {
-        openDrawer();
-        sendUserMessage(`What is the current weather and top news in ${activeCity.name}?`);
-    });
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", toggleTheme);
+    }
 
-    heroInfoBtn.addEventListener("click", () => {
-        openDrawer();
-        sendUserMessage(`Provide a comprehensive live intelligence briefing for ${activeCity.name}.`);
-    });
+    if (heroAskBtn) {
+        heroAskBtn.addEventListener("click", () => {
+            openDrawer();
+            sendUserMessage(`What is the current weather and top news in ${activeCity.name}?`);
+        });
+    }
+
+    if (heroInfoBtn) {
+        heroInfoBtn.addEventListener("click", () => {
+            openDrawer();
+            sendUserMessage(`Provide a comprehensive live intelligence briefing for ${activeCity.name}.`);
+        });
+    }
 
     // Search bar handler
     citySearchInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             const query = citySearchInput.value.trim();
             if (query) {
-                // Find matching or create custom city
+                // Find matching in existing catalog or create temporary card
                 const existing = GLOBAL_CITIES.find(c => c.name.toLowerCase() === query.toLowerCase());
                 if (existing) {
                     setHeroCity(existing);
                 } else {
-                    setHeroCity({
-                        name: query,
-                        country: "Global",
-                        image: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=1000&q=80",
+                    const isIndianQuery = /mumbai|delhi|ghaziabad|bengaluru|bangalore|hyderabad|chennai|kolkata|jaipur|pune|ahmedabad|varanasi|noida|gurugram|lucknow|chandigarh/i.test(query);
+                    const newCity = {
+                        name: query.charAt(0).toUpperCase() + query.slice(1),
+                        country: isIndianQuery ? "India" : "Global",
+                        category: isIndianQuery ? "india" : "global",
+                        image: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=1200&q=80",
                         temp: "--",
                         condition: "Monitoring",
-                        desc: `Real-time intelligence and weather monitoring for ${query}.`
-                    });
+                        desc: `Real-time satellite and news telemetry active for ${query}.`
+                    };
+                    setHeroCity(newCity);
                 }
                 fetchCityOverview(query);
                 citySearchInput.value = "";
@@ -341,6 +700,13 @@ function setupEventListeners() {
         if (text && !pendingApproval) {
             agentInput.value = "";
             sendUserMessage(text);
+        }
+    });
+
+    // Close drawer on Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && agentDrawer.classList.contains("open")) {
+            closeDrawer();
         }
     });
 }

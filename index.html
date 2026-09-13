@@ -1,10 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cityflix | Global City Intelligence</title>
-    <meta name="description" content="Cinematic real-time global city intelligence powered by Groq, OpenWeather, and Tavily.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Cityflix | Global & Indian City Intelligence</title>
+    <meta name="description" content="Cinematic real-time global and Indian city intelligence powered by Groq, OpenWeather, and Tavily.">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#141414" id="metaThemeColor">
+    <script>
+        // Immediate theme restoration to prevent FOUC
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem("cityflix_theme");
+                if (!savedTheme) {
+                    savedTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+                }
+                document.documentElement.setAttribute("data-theme", savedTheme);
+                var metaColor = document.getElementById("metaThemeColor");
+                if (metaColor) {
+                    metaColor.setAttribute("content", savedTheme === "light" ? "#f8fafc" : "#141414");
+                }
+            } catch (e) {}
+        })();
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,25 +35,35 @@
             <a href="#" class="brand-logo" id="brandLogo">CITYFLIX</a>
             <ul class="nav-links">
                 <li><a href="#hero" class="active" id="navHome">Home</a></li>
-                <li><a href="#trending-section" id="navCities">Global Hubs</a></li>
+                <li><a href="#trending-section" id="navCities">Hubs</a></li>
+                <li><a href="#trending-section" id="navIndia" data-filter-click="india">🇮🇳 India Special</a></li>
                 <li><a href="#weather-section" id="navWeather">Weather Radar</a></li>
                 <li><a href="#news-section" id="navNews">Top Intelligence</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <div class="search-box">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                <input type="text" id="citySearchInput" placeholder="Search any city (e.g. Tokyo)..." autocomplete="off">
+            <div class="search-box" id="searchBoxWrapper">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="citySearchInput" placeholder="Search city (e.g. Delhi, Tokyo)..." autocomplete="off" aria-label="Search city">
             </div>
 
-            <div class="api-status-badge" id="apiStatusBadge">
+            <div class="api-status-badge" id="apiStatusBadge" title="Backend Agent Connectivity">
                 <div class="status-dot"></div>
                 <span id="apiStatusText">AI Agent Active</span>
             </div>
 
-            <button class="agent-trigger-btn" id="openDrawerBtn">
+            <!-- Dark / Light Mode Toggle Button -->
+            <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle dark and light mode" title="Switch between Dark and Light mode">
+                <div class="theme-icon-track">
+                    <span class="theme-icon moon-icon">🌙</span>
+                    <span class="theme-icon sun-icon">☀️</span>
+                </div>
+            </button>
+
+            <!-- Agent Terminal Trigger -->
+            <button class="agent-trigger-btn" id="openDrawerBtn" aria-label="Open AI Terminal">
                 <span>🛰️</span>
-                <span>Open Terminal</span>
+                <span class="btn-text">Terminal</span>
             </button>
         </div>
     </header>
@@ -52,8 +80,8 @@
             <h1 class="hero-title" id="heroCityTitle">BARCELONA</h1>
             <div class="hero-meta">
                 <span class="meta-match">99% MATCH</span>
+                <span class="meta-tag" id="heroRegionTag">GLOBAL HUB</span>
                 <span class="meta-tag">4K LIVE</span>
-                <span class="meta-tag">SATELLITE SYNCED</span>
                 <div class="meta-weather" id="heroWeatherBadge">
                     <span>🌦️</span>
                     <span id="heroWeatherText">26°C Clear Sky</span>
@@ -64,11 +92,11 @@
             </p>
             <div class="hero-buttons">
                 <button class="btn-play" id="heroAskBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                     <span>Ask City Agent</span>
                 </button>
                 <button class="btn-more-info" id="heroInfoBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                     <span>Live Intelligence</span>
                 </button>
             </div>
@@ -80,64 +108,120 @@
          ==================================================================== -->
     <main class="main-content">
         
-        <!-- Row 1: Trending Global Hubs -->
+        <!-- Row 1: Featured Hubs with Category Filter -->
         <section class="row-section" id="trending-section">
             <div class="row-header">
-                <h2 class="row-title">Trending Global Hubs</h2>
-                <span class="row-subtitle">Click any city to feature & query</span>
+                <div class="row-header-title-group">
+                    <h2 class="row-title" id="trendingRowTitle">Featured Metropolitan Hubs</h2>
+                    <span class="row-subtitle">Click any city to feature & live query</span>
+                </div>
+
+                <!-- Indian & Global Filter Pills -->
+                <div class="category-tabs" id="cityCategoryTabs" role="tablist" aria-label="City categories">
+                    <button class="category-tab active" data-category="all" role="tab" aria-selected="true">All Hubs</button>
+                    <button class="category-tab india-tab" data-category="india" role="tab" aria-selected="false">
+                        <span class="tab-flag">🇮🇳</span> Incredible India
+                    </button>
+                    <button class="category-tab" data-category="global" role="tab" aria-selected="false">
+                        <span class="tab-flag">🌍</span> Global Capitals
+                    </button>
+                </div>
             </div>
-            <div class="carousel-track" id="citiesCarousel">
-                <!-- Dynamically generated or interactive cards -->
+
+            <div class="carousel-wrapper">
+                <button class="carousel-nav-btn prev" id="citiesCarouselPrev" aria-label="Previous cities">&#8249;</button>
+                <div class="carousel-track" id="citiesCarousel" tabindex="0" role="region" aria-label="City Hubs">
+                    <!-- Dynamically generated interactive cards -->
+                </div>
+                <button class="carousel-nav-btn next" id="citiesCarouselNext" aria-label="Next cities">&#8250;</button>
             </div>
         </section>
 
         <!-- Row 2: Live Intelligence Headlines -->
         <section class="row-section" id="news-section">
             <div class="row-header">
-                <h2 class="row-title">Top Intelligence & News Headlines</h2>
-                <span class="row-subtitle">Powered by Tavily Live Search</span>
+                <div class="row-header-title-group">
+                    <h2 class="row-title">Top Intelligence & News Headlines</h2>
+                    <span class="row-subtitle">Powered by Tavily Live Search</span>
+                </div>
             </div>
-            <div class="carousel-track" id="newsCarousel">
-                <!-- Dynamically populated news cards -->
+            <div class="carousel-wrapper">
+                <button class="carousel-nav-btn prev" id="newsCarouselPrev" aria-label="Previous headlines">&#8249;</button>
+                <div class="carousel-track" id="newsCarousel" tabindex="0" role="region" aria-label="News Headlines">
+                    <!-- Dynamically populated news cards -->
+                </div>
+                <button class="carousel-nav-btn next" id="newsCarouselNext" aria-label="Next headlines">&#8250;</button>
             </div>
         </section>
 
         <!-- Row 3: Global Weather Radar -->
         <section class="row-section" id="weather-section">
             <div class="row-header">
-                <h2 class="row-title">Global Weather Radar</h2>
-                <span class="row-subtitle">Powered by OpenWeatherMap API</span>
+                <div class="row-header-title-group">
+                    <h2 class="row-title">Live Weather Radar & Sensors</h2>
+                    <span class="row-subtitle">Powered by OpenWeatherMap Real-time Telemetry</span>
+                </div>
             </div>
-            <div class="carousel-track" id="weatherCarousel">
-                <!-- Dynamically populated weather cards -->
+            <div class="carousel-wrapper">
+                <button class="carousel-nav-btn prev" id="weatherCarouselPrev" aria-label="Previous weather">&#8249;</button>
+                <div class="carousel-track" id="weatherCarousel" tabindex="0" role="region" aria-label="Weather Radar">
+                    <!-- Dynamically populated weather cards -->
+                </div>
+                <button class="carousel-nav-btn next" id="weatherCarouselNext" aria-label="Next weather">&#8250;</button>
             </div>
         </section>
 
     </main>
 
     <!-- ====================================================================
+         Mobile Bottom Navigation Bar (App Experience)
+         ==================================================================== -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+        <a href="#hero" class="mob-nav-item active" id="mobNavHome">
+            <span class="mob-icon">🏠</span>
+            <span class="mob-label">Home</span>
+        </a>
+        <a href="#trending-section" class="mob-nav-item" id="mobNavIndia">
+            <span class="mob-icon">🇮🇳</span>
+            <span class="mob-label">India</span>
+        </a>
+        <a href="#trending-section" class="mob-nav-item" id="mobNavHubs">
+            <span class="mob-icon">🌐</span>
+            <span class="mob-label">Hubs</span>
+        </a>
+        <a href="#weather-section" class="mob-nav-item" id="mobNavWeather">
+            <span class="mob-icon">🌦️</span>
+            <span class="mob-label">Radar</span>
+        </a>
+        <button class="mob-nav-item mob-terminal-btn" id="mobNavTerminal">
+            <span class="mob-icon">🛰️</span>
+            <span class="mob-label">Terminal</span>
+        </button>
+    </nav>
+
+    <!-- ====================================================================
          Netflix Agent Terminal (Slide-over Drawer)
          ==================================================================== -->
     <div class="agent-drawer-overlay" id="drawerOverlay"></div>
 
-    <aside class="agent-drawer" id="agentDrawer">
+    <aside class="agent-drawer" id="agentDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
         <div class="drawer-header">
             <div class="drawer-title-group">
-                <div style="font-size: 1.5rem;">🛰️</div>
+                <div class="drawer-icon">🛰️</div>
                 <div>
-                    <h3>Cityflix Agent Terminal</h3>
-                    <p>Powered by Groq gpt-oss-120b & LangChain</p>
+                    <h3 id="drawerTitle">Cityflix Terminal</h3>
+                    <p>Groq gpt-oss-120b & LangChain Intelligence</p>
                 </div>
             </div>
-            <button class="drawer-close-btn" id="closeDrawerBtn">&times;</button>
+            <button class="drawer-close-btn" id="closeDrawerBtn" aria-label="Close Agent Terminal">&times;</button>
         </div>
 
         <div class="drawer-messages" id="drawerMessages">
             <div class="msg-row bot">
                 <div class="msg-avatar bot">N</div>
                 <div class="msg-bubble">
-                    Welcome to <strong>Cityflix Terminal</strong>. I have real-time access to live weather sensors and global news intelligence.<br><br>
-                    Ask me about any city in the world (e.g. <em>"What is the weather and top headlines in Tokyo?"</em>).
+                    Welcome to <strong>Cityflix Terminal</strong>. I have real-time access to live weather telemetry and global news intelligence.<br><br>
+                    Ask me about any city in India or across the globe (e.g. <em>"What is the weather and latest tech news in Bengaluru?"</em> or <em>"Provide a live briefing on Delhi"</em>).
                 </div>
             </div>
         </div>
@@ -147,7 +231,7 @@
 
         <div class="drawer-input-area">
             <form class="drawer-form" id="agentChatForm">
-                <input type="text" id="agentInput" placeholder="Message Cityflix Agent..." autocomplete="off">
+                <input type="text" id="agentInput" placeholder="Message Cityflix Agent..." autocomplete="off" aria-label="Chat input">
                 <button type="submit" id="agentSendBtn">Send</button>
             </form>
         </div>
