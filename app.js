@@ -264,7 +264,7 @@ const HERO_CITIES = [
 
 let heroCurrentIndex = 0;
 let heroAutoTimer = null;
-const HERO_INTERVAL_MS = 6000;
+const HERO_INTERVAL_MS = 3000; // 3 seconds carousel duration as requested
 
 // Hover Card State
 let hoverShowTimer = null;
@@ -501,12 +501,16 @@ async function checkApiStatus() {
 // ==============================================================================
 // Hero Billboard & City Switching with Auto-Running Carousel
 // ==============================================================================
-function setHeroCity(cityData) {
+function setHeroCity(cityData, updateSlide = true) {
     activeCity = cityData;
     if (heroCityTitle) heroCityTitle.textContent = cityData.name;
     if (heroSynopsis) heroSynopsis.textContent = cityData.desc;
     if (heroWeatherText) heroWeatherText.textContent = `${cityData.temp} ${cityData.condition}`;
-    if (heroBillboard) heroBillboard.style.backgroundImage = `url('${cityData.image}')`;
+    
+    const heroSliderTrack = document.getElementById("heroSliderTrack");
+    if (!heroSliderTrack && heroBillboard) {
+        heroBillboard.style.backgroundImage = `url('${cityData.image}')`;
+    }
     
     if (heroRegionTag) {
         if (cityData.category === "india" || (cityData.country && cityData.country.toLowerCase() === "india")) {
@@ -520,18 +524,39 @@ function setHeroCity(cityData) {
         }
     }
 
-    // Sync hero carousel state if city is in HERO_CITIES
+    const heroRankSubtextEl = document.getElementById("heroRankSubtext") || heroRankPill;
     const heroIdx = HERO_CITIES.findIndex(c => c.name.toLowerCase() === cityData.name.toLowerCase());
     if (heroIdx !== -1) {
         heroCurrentIndex = heroIdx;
-        updateHeroIndicators(heroIdx);
-        if (heroRankPill) heroRankPill.textContent = `#${heroIdx + 1} in Trending Hubs`;
+        if (heroRankSubtextEl) heroRankSubtextEl.textContent = `#${heroIdx + 1} in Trending Hubs`;
+        if (updateSlide) {
+            goToHeroSlide(heroIdx, false);
+        }
+    } else {
+        if (heroRankSubtextEl) heroRankSubtextEl.textContent = `Featured Hub`;
+        if (heroSliderTrack) {
+            const curSlide = heroSliderTrack.children[heroCurrentIndex];
+            if (curSlide) curSlide.style.backgroundImage = `url('${cityData.image}')`;
+        }
     }
 }
 
 function setupHeroCarousel() {
+    // Populate sliding background track for ultra smooth 60fps GPU slide transition
+    const heroSliderTrack = document.getElementById("heroSliderTrack");
+    if (heroSliderTrack) {
+        heroSliderTrack.innerHTML = "";
+        HERO_CITIES.forEach((city) => {
+            const slide = document.createElement("div");
+            slide.className = "hero-slide";
+            slide.style.backgroundImage = `url('${city.image}')`;
+            heroSliderTrack.appendChild(slide);
+        });
+    }
+
     if (!heroIndicators) return;
 
+    // Populate segmented indicator dashes with inner white-to-red progress fill
     heroIndicators.innerHTML = "";
     HERO_CITIES.forEach((city, idx) => {
         const dash = document.createElement("div");
@@ -540,6 +565,10 @@ function setupHeroCarousel() {
         dash.setAttribute("role", "button");
         dash.setAttribute("tabindex", "0");
         dash.setAttribute("aria-label", `Switch hero slide to ${city.name}`);
+
+        const fill = document.createElement("div");
+        fill.className = "hero-indicator-fill";
+        dash.appendChild(fill);
 
         dash.addEventListener("click", () => {
             goToHeroSlide(idx, true);
@@ -564,6 +593,27 @@ function setupHeroCarousel() {
         });
     }
 
+    // Touch swipe support on mobile devices
+    const heroEl = document.getElementById("hero");
+    if (heroEl) {
+        let touchStartX = 0;
+        heroEl.addEventListener("touchstart", (e) => {
+            if (e.touches && e.touches.length > 0) touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        heroEl.addEventListener("touchend", (e) => {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                const diffX = touchStartX - e.changedTouches[0].clientX;
+                if (Math.abs(diffX) > 40) {
+                    if (diffX > 0) {
+                        goToHeroSlide((heroCurrentIndex + 1) % HERO_CITIES.length, true);
+                    } else {
+                        goToHeroSlide((heroCurrentIndex - 1 + HERO_CITIES.length) % HERO_CITIES.length, true);
+                    }
+                }
+            }
+        }, { passive: true });
+    }
+
     // Pause on hover over framed billboard
     const outerFrame = document.querySelector(".hero-outer-frame") || heroBillboard;
     if (outerFrame) {
@@ -571,25 +621,66 @@ function setupHeroCarousel() {
         outerFrame.addEventListener("mouseleave", resumeHeroTimer);
     }
 
+    // Initialize slide 0 and start timer
+    goToHeroSlide(0, false);
     startHeroTimer();
 }
 
-function updateHeroIndicators(idx) {
+function updateHeroIndicators(idx, animate = true) {
     if (!heroIndicators) return;
     const dashes = heroIndicators.querySelectorAll(".hero-indicator-dash");
     dashes.forEach((d, i) => {
-        d.classList.toggle("active", i === idx);
+        const fill = d.querySelector(".hero-indicator-fill");
+        d.classList.remove("active", "completed");
+        
+        if (fill) {
+            fill.style.animation = "none";
+            void fill.offsetWidth; // Force reflow to cleanly restart CSS keyframe animation
+        }
+
+        if (i < idx) {
+            d.classList.add("completed");
+            if (fill) {
+                fill.style.width = "100%";
+            }
+        } else if (i === idx) {
+            d.classList.add("active");
+            if (fill) {
+                fill.style.width = "0%";
+                if (animate) {
+                    fill.style.animation = `heroProgressFill ${HERO_INTERVAL_MS}ms linear forwards`;
+                }
+            }
+        } else {
+            if (fill) {
+                fill.style.width = "0%";
+            }
+        }
     });
 }
 
 function goToHeroSlide(index, manualTrigger = false) {
-    heroCurrentIndex = index;
+    heroCurrentIndex = (index + HERO_CITIES.length) % HERO_CITIES.length;
     const targetCity = HERO_CITIES[heroCurrentIndex];
-    setHeroCity(targetCity);
-    updateHeroIndicators(heroCurrentIndex);
+
+    // Hardware accelerated smooth sliding of background track
+    const heroSliderTrack = document.getElementById("heroSliderTrack");
+    if (heroSliderTrack) {
+        heroSliderTrack.style.transform = `translateX(-${heroCurrentIndex * 100}%)`;
+    }
+
+    // Text reveal transition
+    const heroContent = document.querySelector(".hero-content");
+    if (heroContent) {
+        heroContent.classList.remove("slide-transition");
+        void heroContent.offsetWidth;
+        heroContent.classList.add("slide-transition");
+    }
+
+    setHeroCity(targetCity, false);
+    updateHeroIndicators(heroCurrentIndex, true);
 
     if (manualTrigger) {
-        fetchCityOverview(targetCity.name);
         startHeroTimer();
     }
 }
@@ -611,6 +702,14 @@ function pauseHeroTimer() {
 
 function resumeHeroTimer() {
     startHeroTimer();
+    if (heroIndicators) {
+        const activeDash = heroIndicators.querySelector(".hero-indicator-dash.active .hero-indicator-fill");
+        if (activeDash) {
+            activeDash.style.animation = "none";
+            void activeDash.offsetWidth;
+            activeDash.style.animation = `heroProgressFill ${HERO_INTERVAL_MS}ms linear forwards`;
+        }
+    }
 }
 
 // ==============================================================================

@@ -573,11 +573,32 @@ body {
     background-repeat: no-repeat;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
     border: 1px solid var(--border-light);
-    transition: background-image 0.75s ease-in-out;
 }
 
 .hero-billboard:hover .hero-nav-arrow {
     opacity: 0.85;
+}
+
+/* Sliding Hero Background Track for Ultra Smooth Scroll / Slide */
+.hero-slider-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.85s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+    z-index: 1;
+}
+
+.hero-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
 }
 
 /* Hero Vignette Gradients */
@@ -590,6 +611,7 @@ body {
     background: var(--hero-vignette-1), var(--hero-vignette-2);
     pointer-events: none;
     transition: background 0.3s ease;
+    z-index: 5;
 }
 
 /* Hero Nav Arrows */
@@ -673,6 +695,21 @@ body {
     max-width: 660px;
     z-index: 10;
     transition: opacity 0.4s ease;
+}
+
+.hero-content.slide-transition {
+    animation: heroTextReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroTextReveal {
+    0% {
+        opacity: 0.3;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero-series-badge {
@@ -803,30 +840,66 @@ body {
     transform: scale(1.03);
 }
 
-/* Netflix Segmented Progress Indicator Dashes */
+/* Netflix Segmented Progress Indicator Dashes (White to Red Completion) */
 .hero-indicators {
     position: absolute;
     bottom: 24px;
     right: 24px;
-    z-index: 20;
+    z-index: 25;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
 }
 
 .hero-indicator-dash {
-    width: 24px;
+    width: 28px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 3px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    transition: width 0.35s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.25s ease;
+}
+
+.hero-indicator-dash:hover {
+    background: rgba(255, 255, 255, 0.8);
 }
 
 .hero-indicator-dash.active {
-    width: 38px;
+    width: 46px;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+/* Inner progress bar that completes from white to glowing Netflix red */
+.hero-indicator-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
     background: var(--netflix-red);
-    box-shadow: 0 0 8px var(--netflix-red-glow);
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--netflix-red-glow), 0 0 4px var(--netflix-red);
+    will-change: width;
+}
+
+.hero-indicator-dash.completed .hero-indicator-fill {
+    width: 100%;
+}
+
+@keyframes heroProgressFill {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+/* Pause red completion progress on hover */
+.hero-outer-frame:hover .hero-indicator-dash.active .hero-indicator-fill {
+    animation-play-state: paused;
 }
 
 /* ==========================================================================
@@ -1113,8 +1186,16 @@ body {
     display: flex;
     gap: 0;
     overflow-x: auto;
+    overflow-y: hidden;
     padding: 1.4rem 4px;
+    scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.top10-track::-webkit-scrollbar {
+    display: none;
 }
 
 .top10-card {
@@ -2227,6 +2308,16 @@ body {
     .hero-indicators {
         bottom: 12px;
         right: 12px;
+        gap: 5px;
+    }
+
+    .hero-indicator-dash {
+        width: 18px;
+        height: 3px;
+    }
+
+    .hero-indicator-dash.active {
+        width: 32px;
     }
 
     /* Main Content Spacing on Mobile */
