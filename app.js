@@ -81,7 +81,7 @@ const GLOBAL_CITIES = [
         name: "Varanasi",
         country: "India",
         category: "india",
-        image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1200&q=80",
+        image: "varanasi.jpg",
         temp: "28°C",
         condition: "Gentle Haze",
         desc: "One of the oldest continuously inhabited cities on Earth, featuring sacred Ganga ghats, devotional evening aartis, and profound spiritual roots."
