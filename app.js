@@ -1,6 +1,6 @@
 // ==============================================================================
 // CITYFLIX - Client Application Logic
-// Enhanced with Indian Hubs, Dark/Light Mode, and Mobile/Tablet Responsiveness
+// Enhanced with Section Focus & Translucency Mode, Mobile UX, and Indian Hubs
 // ==============================================================================
 
 const GLOBAL_CITIES = [
@@ -163,10 +163,13 @@ const GLOBAL_CITIES = [
 ];
 
 // App State
-let activeCity = GLOBAL_CITIES[0]; // Defaults to Mumbai (first Indian hub)
+let activeCity = GLOBAL_CITIES[0]; // Mumbai
 let activeCategory = "all";
 let chatHistory = [];
 let pendingApproval = null;
+let currentFocusedSection = null;
+
+const ALL_SECTIONS = ["hero", "trending-section", "news-section", "weather-section"];
 
 // DOM Elements
 const navbar = document.getElementById("navbar");
@@ -197,6 +200,18 @@ const apiStatusBadge = document.getElementById("apiStatusBadge");
 const apiStatusText = document.getElementById("apiStatusText");
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 
+// Mobile Search Elements
+const mobSearchBtn = document.getElementById("mobSearchBtn");
+const mobSearchBar = document.getElementById("mobSearchBar");
+const mobCitySearchInput = document.getElementById("mobCitySearchInput");
+const mobSearchCloseBtn = document.getElementById("mobSearchCloseBtn");
+
+// Focus & Translucency Elements
+const focusResetBar = document.getElementById("focusResetBar");
+const focusResetLabel = document.getElementById("focusResetLabel");
+const focusResetBtn = document.getElementById("focusResetBtn");
+
+// Agent Drawer Elements
 const agentDrawer = document.getElementById("agentDrawer");
 const drawerOverlay = document.getElementById("drawerOverlay");
 const openDrawerBtn = document.getElementById("openDrawerBtn");
@@ -212,7 +227,6 @@ const mobNavIndia = document.getElementById("mobNavIndia");
 const mobNavHubs = document.getElementById("mobNavHubs");
 const mobNavWeather = document.getElementById("mobNavWeather");
 const mobNavTerminal = document.getElementById("mobNavTerminal");
-const navIndia = document.getElementById("navIndia");
 
 // ==============================================================================
 // Initialization
@@ -227,6 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCarouselNavButtons();
     setupCategoryTabs();
     setupMobileNav();
+    setupNavigationFocus();
 });
 
 // Navbar scroll blur effect
@@ -239,6 +254,125 @@ window.addEventListener("scroll", () => {
 });
 
 // ==============================================================================
+// Section Focus & Translucency Logic
+// When a header link is clicked, the target section stays sharp while all other
+// sections become softly blurred and translucent.
+// ==============================================================================
+function focusSection(targetId) {
+    if (!targetId || targetId === "hero" || targetId === "all") {
+        resetSectionFocus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+    }
+
+    const targetEl = document.getElementById(targetId);
+    if (!targetEl) return;
+
+    currentFocusedSection = targetId;
+
+    // Dim all other sections with smooth translucency
+    ALL_SECTIONS.forEach(secId => {
+        const el = document.getElementById(secId);
+        if (!el) return;
+        if (secId === targetId) {
+            el.classList.add("section-focused");
+            el.classList.remove("section-translucent");
+        } else {
+            el.classList.add("section-translucent");
+            el.classList.remove("section-focused");
+        }
+    });
+
+    // Update floating reset indicator
+    if (focusResetBar) {
+        if (focusResetLabel) {
+            let sectionName = "Focused View";
+            if (targetId === "weather-section") sectionName = "Weather Radar Active";
+            else if (targetId === "news-section") sectionName = "Top Intelligence Active";
+            else if (targetId === "trending-section") sectionName = "City Hubs Active";
+            focusResetLabel.textContent = sectionName;
+        }
+        focusResetBar.classList.add("active");
+    }
+
+    // Smoothly scroll to the target section with fixed navbar offset
+    const navHeight = navbar ? navbar.offsetHeight : 64;
+    const elementPosition = targetEl.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - navHeight - 12;
+
+    window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+    });
+}
+
+function resetSectionFocus() {
+    currentFocusedSection = null;
+    ALL_SECTIONS.forEach(secId => {
+        const el = document.getElementById(secId);
+        if (el) {
+            el.classList.remove("section-translucent");
+            el.classList.remove("section-focused");
+        }
+    });
+
+    if (focusResetBar) {
+        focusResetBar.classList.remove("active");
+    }
+
+    // Update active nav links
+    document.querySelectorAll(".nav-links a").forEach(a => a.classList.remove("active"));
+    const homeLink = document.getElementById("navHome");
+    if (homeLink) homeLink.classList.add("active");
+    updateActiveMobNav(mobNavHome);
+}
+
+function setupNavigationFocus() {
+    // Top desktop navigation links
+    const navLinks = document.querySelectorAll(".nav-links a");
+    navLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            navLinks.forEach(l => l.classList.remove("active"));
+            link.classList.add("active");
+
+            const targetSection = link.getAttribute("data-target-section");
+            const filterClick = link.getAttribute("data-filter-click");
+
+            if (filterClick) {
+                selectCategoryFilter(filterClick);
+            }
+
+            if (targetSection === "hero") {
+                resetSectionFocus();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            } else if (targetSection) {
+                focusSection(targetSection);
+            }
+        });
+    });
+
+    // Reset button in floating pill
+    if (focusResetBtn) {
+        focusResetBtn.addEventListener("click", () => {
+            resetSectionFocus();
+        });
+    }
+
+    // Allow clicking on any dimmed section to restore full view
+    ALL_SECTIONS.forEach(secId => {
+        const el = document.getElementById(secId);
+        if (el) {
+            el.addEventListener("click", (e) => {
+                if (el.classList.contains("section-translucent")) {
+                    focusSection(secId);
+                }
+            });
+        }
+    });
+}
+
+// ==============================================================================
 // Dark / Light Mode System
 // ==============================================================================
 function initTheme() {
@@ -246,7 +380,6 @@ function initTheme() {
         (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
     applyTheme(savedTheme);
 
-    // Listen to OS theme changes if user hasn't explicitly set a custom theme in this session
     if (window.matchMedia) {
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
             if (!localStorage.getItem("cityflix_theme_user_locked")) {
@@ -408,6 +541,7 @@ function renderCitiesCarousel() {
         const selectHandler = () => {
             setHeroCity(city);
             fetchCityOverview(city.name);
+            resetSectionFocus();
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
 
@@ -445,6 +579,9 @@ async function fetchCityOverview(cityName) {
 }
 
 function renderWeatherSection(city, weatherText) {
+    const isError = !weatherText || weatherText.startsWith("Error");
+    const displayWeather = isError ? "Telemetry Syncing (OpenWeather Sensor Active)" : weatherText;
+
     weatherCarousel.innerHTML = `
         <div class="weather-card" tabindex="0" role="region" aria-label="Current Live Weather for ${city}">
             <div class="weather-header">
@@ -452,7 +589,7 @@ function renderWeatherSection(city, weatherText) {
                 <div class="weather-condition">Satellite Telemetry</div>
             </div>
             <div class="weather-temp-huge">Live</div>
-            <div style="font-size: 0.9rem; color: var(--text-secondary);">${weatherText}</div>
+            <div style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.4;">${displayWeather}</div>
             <div class="weather-details-grid">
                 <div>Source: OpenWeather</div>
                 <div>Status: Real-time</div>
@@ -490,9 +627,10 @@ function renderNewsSection(city, newsText) {
     newsCarousel.innerHTML = "";
     
     // Parse items from news text
-    const lines = (newsText || "").split("\n\n").filter(b => b.trim().length > 0);
+    const isError = !newsText || newsText.startsWith("Error fetching news") || newsText.includes("No news found");
+    const lines = isError ? [] : newsText.split("\n\n").filter(b => b.trim().length > 0);
     
-    if (lines.length === 0 || newsText.includes("No news found")) {
+    if (lines.length === 0) {
         newsCarousel.innerHTML = `
             <div class="news-card">
                 <div class="news-card-badge">🔴 TAVILY RADAR</div>
@@ -554,6 +692,7 @@ function setupMobileNav() {
     if (mobNavHome) {
         mobNavHome.addEventListener("click", (e) => {
             e.preventDefault();
+            resetSectionFocus();
             window.scrollTo({ top: 0, behavior: "smooth" });
             updateActiveMobNav(mobNavHome);
         });
@@ -563,7 +702,7 @@ function setupMobileNav() {
         mobNavIndia.addEventListener("click", (e) => {
             e.preventDefault();
             selectCategoryFilter("india");
-            document.getElementById("trending-section")?.scrollIntoView({ behavior: "smooth" });
+            focusSection("trending-section");
             updateActiveMobNav(mobNavIndia);
         });
     }
@@ -572,7 +711,7 @@ function setupMobileNav() {
         mobNavHubs.addEventListener("click", (e) => {
             e.preventDefault();
             selectCategoryFilter("all");
-            document.getElementById("trending-section")?.scrollIntoView({ behavior: "smooth" });
+            focusSection("trending-section");
             updateActiveMobNav(mobNavHubs);
         });
     }
@@ -580,7 +719,7 @@ function setupMobileNav() {
     if (mobNavWeather) {
         mobNavWeather.addEventListener("click", (e) => {
             e.preventDefault();
-            document.getElementById("weather-section")?.scrollIntoView({ behavior: "smooth" });
+            focusSection("weather-section");
             updateActiveMobNav(mobNavWeather);
         });
     }
@@ -590,20 +729,38 @@ function setupMobileNav() {
             openDrawer();
         });
     }
-
-    // Top navbar "India Special" link
-    if (navIndia) {
-        navIndia.addEventListener("click", (e) => {
-            e.preventDefault();
-            selectCategoryFilter("india");
-            document.getElementById("trending-section")?.scrollIntoView({ behavior: "smooth" });
-        });
-    }
 }
 
 function updateActiveMobNav(activeItem) {
     document.querySelectorAll(".mob-nav-item").forEach(item => item.classList.remove("active"));
     if (activeItem) activeItem.classList.add("active");
+}
+
+// ==============================================================================
+// Search Handler (Shared between Desktop & Mobile)
+// ==============================================================================
+function handleCitySearch(query) {
+    if (!query) return;
+    const existing = GLOBAL_CITIES.find(c => c.name.toLowerCase() === query.toLowerCase());
+    if (existing) {
+        setHeroCity(existing);
+    } else {
+        const isIndianQuery = /mumbai|delhi|ghaziabad|bengaluru|bangalore|hyderabad|chennai|kolkata|jaipur|pune|ahmedabad|varanasi|noida|gurugram|lucknow|chandigarh/i.test(query);
+        const newCity = {
+            name: query.charAt(0).toUpperCase() + query.slice(1),
+            country: isIndianQuery ? "India" : "Global",
+            category: isIndianQuery ? "india" : "global",
+            image: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=1200&q=80",
+            temp: "--",
+            condition: "Monitoring",
+            desc: `Real-time satellite and news telemetry active for ${query}.`
+        };
+        setHeroCity(newCity);
+    }
+    fetchCityOverview(query);
+    resetSectionFocus();
+    openDrawer();
+    sendUserMessage(`What is the weather and top headlines in ${query}?`);
 }
 
 // ==============================================================================
@@ -645,35 +802,43 @@ function setupEventListeners() {
         });
     }
 
-    // Search bar handler
-    citySearchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            const query = citySearchInput.value.trim();
-            if (query) {
-                // Find matching in existing catalog or create temporary card
-                const existing = GLOBAL_CITIES.find(c => c.name.toLowerCase() === query.toLowerCase());
-                if (existing) {
-                    setHeroCity(existing);
-                } else {
-                    const isIndianQuery = /mumbai|delhi|ghaziabad|bengaluru|bangalore|hyderabad|chennai|kolkata|jaipur|pune|ahmedabad|varanasi|noida|gurugram|lucknow|chandigarh/i.test(query);
-                    const newCity = {
-                        name: query.charAt(0).toUpperCase() + query.slice(1),
-                        country: isIndianQuery ? "India" : "Global",
-                        category: isIndianQuery ? "india" : "global",
-                        image: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=1200&q=80",
-                        temp: "--",
-                        condition: "Monitoring",
-                        desc: `Real-time satellite and news telemetry active for ${query}.`
-                    };
-                    setHeroCity(newCity);
-                }
-                fetchCityOverview(query);
+    // Desktop search bar handler
+    if (citySearchInput) {
+        citySearchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const query = citySearchInput.value.trim();
                 citySearchInput.value = "";
-                openDrawer();
-                sendUserMessage(`What is the weather and top headlines in ${query}?`);
+                handleCitySearch(query);
             }
-        }
-    });
+        });
+    }
+
+    // Mobile search icon toggle
+    if (mobSearchBtn && mobSearchBar) {
+        mobSearchBtn.addEventListener("click", () => {
+            mobSearchBar.classList.toggle("open");
+            if (mobSearchBar.classList.contains("open")) {
+                mobCitySearchInput?.focus();
+            }
+        });
+    }
+
+    if (mobSearchCloseBtn && mobSearchBar) {
+        mobSearchCloseBtn.addEventListener("click", () => {
+            mobSearchBar.classList.remove("open");
+        });
+    }
+
+    if (mobCitySearchInput) {
+        mobCitySearchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const query = mobCitySearchInput.value.trim();
+                mobCitySearchInput.value = "";
+                mobSearchBar?.classList.remove("open");
+                handleCitySearch(query);
+            }
+        });
+    }
 
     // Chat form submit
     agentChatForm.addEventListener("submit", (e) => {
@@ -687,8 +852,9 @@ function setupEventListeners() {
 
     // Close drawer on Escape key
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && agentDrawer.classList.contains("open")) {
-            closeDrawer();
+        if (e.key === "Escape") {
+            if (agentDrawer.classList.contains("open")) closeDrawer();
+            if (mobSearchBar?.classList.contains("open")) mobSearchBar.classList.remove("open");
         }
     });
 }
@@ -761,7 +927,6 @@ async function sendUserMessage(text) {
         chatHistory = data.history || chatHistory;
 
         if (data.status === "approval_required") {
-            // Display Human in the Loop approval card
             renderApprovalCards(data.tool_calls);
         } else if (data.status === "complete") {
             appendMessage("bot", data.content);
@@ -776,7 +941,6 @@ async function sendUserMessage(text) {
 function renderApprovalCards(toolCalls) {
     if (!toolCalls || toolCalls.length === 0) return;
     
-    // Lock input until decision is made
     agentInput.disabled = true;
     approvalContainer.innerHTML = "";
 
@@ -816,7 +980,6 @@ async function handleApprovalDecision(toolCall, approved) {
     approvalContainer.innerHTML = "";
     agentInput.disabled = false;
 
-    // Show status in chat
     const notice = approved ? `Approved tool call: \`${toolCall.name}\`` : `Denied tool call: \`${toolCall.name}\``;
     appendMessage("bot", `<em>${notice}...</em>`);
 
@@ -843,7 +1006,6 @@ async function handleApprovalDecision(toolCall, approved) {
 
         chatHistory = data.history || chatHistory;
 
-        // If tool was executed, show tool result box
         if (data.tool_result) {
             const toolBox = document.createElement("div");
             toolBox.className = "tool-result-box";
@@ -851,7 +1013,6 @@ async function handleApprovalDecision(toolCall, approved) {
             drawerMessages.appendChild(toolBox);
         }
 
-        // If next tool call is requested
         if (data.status === "approval_required") {
             renderApprovalCards(data.tool_calls);
         } else if (data.status === "complete") {
